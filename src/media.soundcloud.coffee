@@ -51,7 +51,7 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 			webkitAllowFullScreen: "true"
 			mozallowfullscreen: "true"
 			allowFullScreen: "true"
-			style: "display: hidden;"
+			style: "visibility: hidden;"
 
 		@player_el_.insertBefore @scWidgetElement, @player_el_.firstChild
 
