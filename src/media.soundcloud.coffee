@@ -126,6 +126,17 @@ videojs.Soundcloud.prototype.play = ->
 		# We will play it when the API will be ready
 		@playOnReady = true
 
+###
+Toggle the playstate between playing and paused
+###
+videojs.Soundcloud.prototype.toggle = ->
+	debug "toggle"
+	# We used @player_ to trigger events for changing the display
+	if @player_.paused()
+		@player_.play()
+	else
+		@player_.pause()
+
 videojs.Soundcloud.prototype.pause = ->
 	@soundcloudPlayer.pause()
 videojs.Soundcloud.prototype.paused = ->
