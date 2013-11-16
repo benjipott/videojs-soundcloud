@@ -107,12 +107,17 @@ videojs.Soundcloud.prototype.onApiReady = ->
 Destruct the tech and it's DOM elements
 ###
 videojs.Soundcloud.prototype.dispose = ->
+	debug "dispose"
 	if @scWidgetElement
-		@scWidgetElement.parentNode.removeChild(@scWidgetElement)
-
+		@scWidgetElement.remove()
+		debug "Removed widget Element"
+		debug @scWidgetElement
+	@player_.el().classList.remove "backgroundContainer"
+	@player_.el().style.backgroundImage = ""
+	debug "removed CSS"
 	delete @soundcloudPlayer if @soundcloudPlayer
+	@isReady_ = false
 
-	videojs.MediaTechController.prototype.dispose.call(@)
 
 videojs.Soundcloud.prototype.src = (src)->
 	@soundcloudPlayer.load src, {}
