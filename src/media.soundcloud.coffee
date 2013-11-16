@@ -48,7 +48,7 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 
 		# Create the iframe for the soundcloud API
 		@scWidgetId = @player_.id() + '_soundcloud_api'
-		@scWidgetElement = videojs.Component.prototype.createEl 'iframe',
+		@scWidgetElement = videojs.Component::createEl 'iframe',
 			id: @scWidgetId
 			className: 'vjs-tech'
 			scrolling: 'no'
@@ -75,7 +75,7 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 ###
 Set up everything to use soundcloud's streaming API
 ###
-videojs.Soundcloud.prototype.onApiReady = ->
+videojs.Soundcloud::onApiReady = ->
 	debug "onApiReady (SC exists)"
 
 	if not @apiInitialized
@@ -87,7 +87,7 @@ videojs.Soundcloud.prototype.onApiReady = ->
 ###
 Destruct the tech and it's DOM elements
 ###
-videojs.Soundcloud.prototype.dispose = ->
+videojs.Soundcloud::dispose = ->
 	debug "dispose"
 	if @scWidgetElement
 		@scWidgetElement.remove()
@@ -97,9 +97,9 @@ videojs.Soundcloud.prototype.dispose = ->
 	@player_.el().style.backgroundImage = ""
 	debug "removed CSS"
 	delete @soundcloudPlayer if @soundcloudPlayer
-		@isReady_ = false
+	@isReady_ = false
 
-videojs.Soundcloud.prototype.load = (src)->
+videojs.Soundcloud::load = ->
 	debug "loading"
 	@loadSoundcloud()
 
@@ -108,7 +108,7 @@ videojs.Soundcloud.prototype.src = (src)->
 	@soundcloudPlayer.load src, callback: =>
 		@onReady()
 
-videojs.Soundcloud.prototype.updatePoster = ->
+videojs.Soundcloud::updatePoster = ->
 	# Get artwork for the sound
 	@soundcloudPlayer.getSounds (sounds) =>
 		return if sounds.length > 1
@@ -120,7 +120,7 @@ videojs.Soundcloud.prototype.updatePoster = ->
 		@player_.el().style.backgroundImage = "url('#{posterUrl}')"
 		#@player_.poster(posterUrl)
 
-videojs.Soundcloud.prototype.play = ->
+videojs.Soundcloud::play = ->
 	if @isReady_
 		debug "play"
 		@soundcloudPlayer.play()
@@ -132,7 +132,7 @@ videojs.Soundcloud.prototype.play = ->
 ###
 Toggle the playstate between playing and paused
 ###
-videojs.Soundcloud.prototype.toggle = ->
+videojs.Soundcloud::toggle = ->
 	debug "toggle"
 	# We used @player_ to trigger events for changing the display
 	if @player_.paused()
@@ -140,21 +140,21 @@ videojs.Soundcloud.prototype.toggle = ->
 	else
 		@player_.pause()
 
-videojs.Soundcloud.prototype.pause = ->
+videojs.Soundcloud::pause = ->
 	debug "pause"
 	@soundcloudPlayer.pause()
-videojs.Soundcloud.prototype.paused = ->
+videojs.Soundcloud::paused = ->
 	debug "paused: #{@paused_}"
 	@paused_
 
 ###
 @return track time in seconds
 ###
-videojs.Soundcloud.prototype.currentTime = ->
+videojs.Soundcloud::currentTime = ->
 	debug "currentTime #{@durationMilliseconds * @playPercentageDecimal / 1000}"
 	@durationMilliseconds * @playPercentageDecimal / 1000
 
-videojs.Soundcloud.prototype.setCurrentTime = (seconds)->
+videojs.Soundcloud::setCurrentTime = (seconds)->
 	debug "setCurrentTime"
 	@soundcloudPlayer.seekTo(seconds*1000)
 	@player_.trigger('timeupdate')
@@ -162,21 +162,21 @@ videojs.Soundcloud.prototype.setCurrentTime = (seconds)->
 ###
 @return total length of track in seconds
 ###
-videojs.Soundcloud.prototype.duration = ->
+videojs.Soundcloud::duration = ->
 	#debug "duration: #{@durationMilliseconds / 1000}"
 	@durationMilliseconds / 1000
 
 # TODO Fix buffer-range calculations
-videojs.Soundcloud.prototype.buffered = ->
+videojs.Soundcloud::buffered = ->
 	timePassed = @duration() * @loadPercentageDecimal
 	debug "buffered #{timePassed}"
 	videojs.createTimeRange 0, timePassed
 
-videojs.Soundcloud.prototype.volume = ->
+videojs.Soundcloud::volume = ->
 	debug "volume: #{@volumeVal}"
 	@volumeVal
 
-videojs.Soundcloud.prototype.setVolume = (percentAsDecimal)->
+videojs.Soundcloud::setVolume = (percentAsDecimal)->
 	debug "setVolume(#{percentAsDecimal}) from #{@volumeVal}"
 	if percentAsDecimal != @volumeVal
 		@volumeVal = percentAsDecimal
@@ -184,7 +184,7 @@ videojs.Soundcloud.prototype.setVolume = (percentAsDecimal)->
 		debug "volume has been set"
 		@player_.trigger 'volumechange'
 
-videojs.Soundcloud.prototype.muted = ->
+videojs.Soundcloud::muted = ->
 	debug "muted: #{@volumeVal == 0}"
 	@volumeVal == 0
 
@@ -196,7 +196,7 @@ We will use @unmutedVolumeVal
 
 @param {Boolean}
 ###
-videojs.Soundcloud.prototype.setMuted = (muted)->
+videojs.Soundcloud::setMuted = (muted)->
 	debug "setMuted(#{muted})"
 	if muted
 		@unmuteVolume = @volumeVal
@@ -215,21 +215,21 @@ videojs.Soundcloud.isSupported = ->
 ###
 Fullscreen of audio is just enlarging making the container fullscreen and using it's poster as a placeholder.
 ###
-videojs.Soundcloud.prototype.supportsFullScreen = ()->
+videojs.Soundcloud::supportsFullScreen = ()->
 	debug "we support fullscreen!"
 	return true
 
 ###
 Fullscreen of audio is just enlarging making the container fullscreen and using it's poster as a placeholder.
 ###
-videojs.Soundcloud.prototype.enterFullScreen = ()->
+videojs.Soundcloud::enterFullScreen = ()->
 	debug "enterfullscreen"
 	@scWidgetElement.webkitEnterFullScreen()
 
 ###
 We return the player's container to it's normal (non-fullscreen) state.
 ###
-videojs.Soundcloud.prototype.exitFullScreen = ->
+videojs.Soundcloud::exitFullScreen = ->
 	debug "EXITfullscreen"
 	@scWidgetElement.webkitExitFullScreen()
 
@@ -237,7 +237,7 @@ videojs.Soundcloud.prototype.exitFullScreen = ->
 Simple URI host check of the given url to see if it's really a soundcloud url
 @param url {String}
 ###
-videojs.Soundcloud.prototype.isSoundcloudUrl = (url)->
+videojs.Soundcloud::isSoundcloudUrl = (url)->
 	uri = new URI url
 
 	switch uri.host
@@ -251,7 +251,7 @@ videojs.Soundcloud.prototype.isSoundcloudUrl = (url)->
 ###
 We expect "audio/soundcloud" or a src containing soundcloud
 ###
-videojs.Soundcloud.prototype.canPlaySource = videojs.Soundcloud.canPlaySource = (source)->
+videojs.Soundcloud::canPlaySource = videojs.Soundcloud.canPlaySource = (source)->
 	if typeof source == "string"
 		return videojs.Soundcloud::isSoundcloudUrl source
 	else
@@ -265,7 +265,7 @@ videojs.Soundcloud.prototype.canPlaySource = videojs.Soundcloud.canPlaySource = 
 ###
 Take care of loading the Soundcloud API
 ###
-videojs.Soundcloud.prototype.loadSoundcloud = ->
+videojs.Soundcloud::loadSoundcloud = ->
 	debug "loadSoundcloud"
 
 	# Prepare everything for playing
@@ -292,7 +292,7 @@ videojs.Soundcloud.prototype.loadSoundcloud = ->
 It should initialize a soundcloud Widget, which will be our player
 and which will react to events.
 ###
-videojs.Soundcloud.prototype.initWidget = ->
+videojs.Soundcloud::initWidget = ->
 	debug "Initializing the widget"
 
 	@soundcloudPlayer = SC.Widget @scWidgetElement
@@ -323,7 +323,7 @@ videojs.Soundcloud.prototype.initWidget = ->
 ###
 Callback for soundcloud's READY event.
 ###
-videojs.Soundcloud.prototype.onReady = ->
+videojs.Soundcloud::onReady = ->
 	debug "onReady"
 
 	@volumeVal = 0
@@ -360,7 +360,7 @@ Callback for Soundcloud's PLAY_PROGRESS event
 It should keep track of how much has been played.
 @param {Decimal= playPercentageDecimal} [0...1] How much has been played  of the sound in decimal from [0...1]
 ###
-videojs.Soundcloud.prototype.onPlayProgress = (@playPercentageDecimal)->
+videojs.Soundcloud::onPlayProgress = (@playPercentageDecimal)->
 	debug "onPlayProgress"
 	@player_.trigger "playing"
 
@@ -369,7 +369,7 @@ Callback for Soundcloud's LOAD_PROGRESS event.
 It should keep track of how much has been buffered/loaded.
 @param {Decimal= loadPercentageDecimal} How much has been buffered/loaded of the sound in decimal from [0...1]
 ###
-videojs.Soundcloud.prototype.onLoadProgress = (@loadPercentageDecimal)->
+videojs.Soundcloud::onLoadProgress = (@loadPercentageDecimal)->
 	debug "onLoadProgress: #{@loadPercentageDecimal}"
 	@player_.trigger "timeupdate"
 
@@ -377,7 +377,7 @@ videojs.Soundcloud.prototype.onLoadProgress = (@loadPercentageDecimal)->
 Callback for Soundcloud's PLAY event.
 It should keep track of the player's paused and playing status.
 ###
-videojs.Soundcloud.prototype.onPlay = ->
+videojs.Soundcloud::onPlay = ->
 	debug "onPlay"
 	@paused_ = false
 	@playing = not @paused_
@@ -387,7 +387,7 @@ videojs.Soundcloud.prototype.onPlay = ->
 Callback for Soundcloud's PAUSE event.
 It should keep track of the player's paused and playing status.
 ###
-videojs.Soundcloud.prototype.onPause = ->
+videojs.Soundcloud::onPause = ->
 	debug "onPause"
 	@paused_ = true
 	@playing = not @paused_
@@ -397,7 +397,7 @@ videojs.Soundcloud.prototype.onPause = ->
 Callback for Soundcloud's FINISHED event.
 It should keep track of the player's paused and playing status.
 ###
-videojs.Soundcloud.prototype.onFinished = ->
+videojs.Soundcloud::onFinished = ->
 	@paused_ = false # TODO what does videojs expect here?
 	@playing = not @paused_
 	@player_.trigger "ended"
@@ -406,6 +406,6 @@ videojs.Soundcloud.prototype.onFinished = ->
 Callback for Soundcloud's ERROR event.
 Sadly soundlcoud doesn't send any information on what happened when using the widget API --> no error message.
 ###
-videojs.Soundcloud.prototype.onError = ->
+videojs.Soundcloud::onError = ->
 	@player_.error = "Soundcloud error"
 	@player_.trigger('error')
