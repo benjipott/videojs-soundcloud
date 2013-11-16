@@ -29,7 +29,6 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 		@features.fullscreenResize = true
 		@features.volumeControl = true
 
-		# TODO check we can just use @player
 		@player_ = player
 		@player_el_ = document.getElementById @player_.id()
 
@@ -38,6 +37,7 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 			for key in options.source
 				@player_.options()[key] = options.source[key]
 		@clientId = @player_.options().soundcloudClientId
+		@soundcloudSource = @player_.options().src || ""
 
 		# Create the iframe for the soundcloud API
 		@scWidgetId = @player_.id() + '_soundcloud_api'
@@ -52,8 +52,11 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 			mozallowfullscreen: "true"
 			allowFullScreen: "true"
 			style: "visibility: hidden;"
+			src: "https://w.soundcloud.com/player/?url=#{@soundcloudSource}"
 
-		@player_el_.insertBefore @scWidgetElement, @player_el_.firstChild
+		@player_el_.appendChild @scWidgetElement
+		@player_el_.classList.add "backgroundContainer"
+		debug "added widget div"
 
 		# Make autoplay work for iOS
 		if @player_.options().autoplay
