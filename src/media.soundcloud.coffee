@@ -227,14 +227,36 @@ videojs.Soundcloud.prototype.exitFullScreen = ->
 	@scWidgetElement.webkitExitFullScreen()
 
 ###
-We expect "audio/soundcloud"
+Simple URI host check of the given url to see if it's really a soundcloud url
+@param url {String}
 ###
-videojs.Soundcloud.canPlaySource = (srcObj)->
-	srcObj.type == 'audio/soundcloud'
+videojs.Soundcloud.prototype.isSoundcloudUrl = (url)->
+	uri = new URI url
+
+	switch uri.host
+		when "www.soundcloud.com"
+		when "soundcloud.com"
+			debug "Can play '#{url}'"
+			return true
+		else
+			return false
 
 ###
-It should initialize a soundcloud Widget, which will be our player
-and which will react to events.
+We expect "audio/soundcloud" or a src containing soundcloud
+###
+videojs.Soundcloud.prototype.canPlaySource = videojs.Soundcloud.canPlaySource = (source)->
+	if typeof source == "string"
+		return videojs.Soundcloud::isSoundcloudUrl source
+	else
+		debug "Can play source?"
+		debug source
+		ret = (source.type == 'audio/soundcloud') or videojs.Soundcloud::isSoundcloudUrl(source.src)
+		debug ret
+		return ret
+
+
+###
+Take care of loading the Soundcloud API
 ###
 videojs.Soundcloud.prototype.loadSoundcloud = ->
 	debug "loadSoundcloud"
