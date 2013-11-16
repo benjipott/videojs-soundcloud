@@ -298,8 +298,8 @@ videojs.Soundcloud.prototype.onReady = ->
 
 	# Preparing to handle muting
 	@soundcloudPlayer.getVolume (volume) =>
-		@unmuteVolume = @volumeVal = volume / 100
-		@setVolume @volumeVal
+		@unmuteVolume = volume / 100
+		@setVolume @unmuteVolume
 
 	# It's async and won't change so let's do this now
 	@soundcloudPlayer.getDuration (duration) =>
