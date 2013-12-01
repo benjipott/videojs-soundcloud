@@ -1,0 +1,61 @@
+{
+  "name": "video.js-soundcloud",
+  "description": "A tech for video.js to play soundcloud links",
+  "version": "0.0.1",
+  "copyright": "See license @ https://github.com/LoveIsGrief/videojs-soundcloud/blob/master/LICENSE",
+  "keywords": [
+    "videojs",
+    "audio",
+    "player"
+  ],
+  "homepage": "https://github.com/LoveIsGrief/videojs-soundcloud",
+  "author": "LoveIsGrief",
+  "scripts": {
+    "test": "grunt test --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LoveIsGrief/videojs-soundcloud.git"
+  },
+  "devDependencies": {
+    "grunt-cli": "~0.1.0",
+    "grunt": "~0.4.0",
+    "video.js": "~4.3.0",
+    "URIjs": "~1.11.2",
+    "grunt-contrib-coffee": "~0.7.0",
+    "grunt-coffee-jshint": "~0.2.0",
+    "grunt-contrib-jshint": "~0.4.3",
+    "grunt-contrib-watch": "~0.1.4",
+    "grunt-contrib-qunit": "~0.2.1",
+    "grunt-contrib-clean": "~0.4.0a",
+    "grunt-contrib-copy": "~0.3.2",
+    "grunt-contrib-less": "~0.6.4",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-concat": "~0.3.0",
+    "calcdeps": "~0.1.7",
+    "contribflow": "~0.2.0",
+    "grunt-s3": "~0.2.0-alpha",
+    "semver": "~1.1.4",
+    "grunt-contrib-cssmin": "~0.6.0",
+    "uglify-js": "~2.3.6",
+    "grunt-karma": "~0.4.4",
+    "karma-qunit": "~0.0.2"
+  },
+  "testling": {
+    "browsers": [
+      "ie6",
+      "ie7",
+      "ie8",
+      "ie9",
+      "firefox/15",
+      "chrome/22",
+      "opera/12",
+      "safari/5.1"
+    ],
+    "harness": "mocha-qunit",
+    "scripts": [
+      "src/js/*.js",
+      "test/unit/*.js"
+    ]
+  }
+}
