@@ -1,4 +1,6 @@
-debug = window.console.debug
+debug = window.console.debug.bind console
+# videojs = require "video.js"
+# URI = require "URIjs"
 ###
 Documentation can be generated using {https://github.com/coffeedoc/codo Codo}
 ###
@@ -25,29 +27,19 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 	init: (player, options, ready)->
 		debug "initializing Soundcloud tech"
 
-		if window.soundcloudTech
-			debug "Soundcloud already exists... kill it!"
-			window.soundcloudTech.dispose()
-
-		window.soundcloudTech = @
-
 		# Define which features we provide
 		@features.fullscreenResize = true
 		@features.volumeControl = true
 		videojs.MediaTechController.call(@, player, options, ready)
 
 		@player_ = player
-		@player_el_ = @player_.el()
 
-		# Copy the Javascript options if they exist
-		if typeof options.source != 'undefined'
-			for key in options.source
-				@player_.options()[key] = options.source[key]
 		@clientId = @player_.options().soundcloudClientId
-		@soundcloudSource = @player_.options().src || ""
+		@soundcloudSource = ""
+		@soundcloudSource = options.source.src || "" if options.source
 
 		# Create the iframe for the soundcloud API
-		@scWidgetId = @player_.id() + '_soundcloud_api'
+		@scWidgetId = "#{@player_.id()}_soundcloud_api_#{Date.now()}"
 		@scWidgetElement = videojs.Component::createEl 'iframe',
 			id: @scWidgetId
 			className: 'vjs-tech'
@@ -61,9 +53,9 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 			style: "visibility: hidden;"
 			src: "https://w.soundcloud.com/player/?url=#{@soundcloudSource}"
 
-		@player_el_.appendChild @scWidgetElement
-		@player_el_.classList.add "backgroundContainer"
-		debug "added widget div"
+		@el().appendChild @scWidgetElement
+		@el().classList.add "backgroundContainer"
+		debug "added widget div with src: #{@scWidgetElement.src}"
 
 		# Make autoplay work for iOS
 		if @player_.options().autoplay
@@ -93,11 +85,10 @@ videojs.Soundcloud::dispose = ->
 		@scWidgetElement.remove()
 		debug "Removed widget Element"
 		debug @scWidgetElement
-	@player_.el().classList.remove "backgroundContainer"
-	@player_.el().style.backgroundImage = ""
+	@el().classList.remove "backgroundContainer"
+	@el().style.backgroundImage = ""
 	debug "removed CSS"
 	delete @soundcloudPlayer if @soundcloudPlayer
-	@isReady_ = false
 
 videojs.Soundcloud::load = ->
 	debug "loading"
@@ -109,16 +100,20 @@ videojs.Soundcloud.prototype.src = (src)->
 		@onReady()
 
 videojs.Soundcloud::updatePoster = ->
-	# Get artwork for the sound
-	@soundcloudPlayer.getSounds (sounds) =>
-		return if sounds.length > 1
+	try
+		# Get artwork for the sound
+		@soundcloudPlayer.getSounds (sounds) =>
+			debug "got sounds"
+			return if sounds.length != 1
 
-		sound = sounds[0]
-		return if  not sound.artwork_url
-		debug "Setting poster to #{sound.artwork_url}"
-		posterUrl = sound.artwork_url
-		@player_.el().style.backgroundImage = "url('#{posterUrl}')"
-		#@player_.poster(posterUrl)
+			sound = sounds[0]
+			return if  not sound.artwork_url
+			debug "Setting poster to #{sound.artwork_url}"
+			posterUrl = sound.artwork_url
+			@el().style.backgroundImage = "url('#{posterUrl}')"
+			#@player_.poster(posterUrl)
+	catch e
+		debug "Could not update poster"
 
 videojs.Soundcloud::play = ->
 	if @isReady_
@@ -240,7 +235,7 @@ Simple URI host check of the given url to see if it's really a soundcloud url
 videojs.Soundcloud::isSoundcloudUrl = (url)->
 	uri = new URI url
 
-	switch uri.host
+	switch uri.hostname()
 		when "www.soundcloud.com", "soundcloud.com"
 			debug "Can play '#{url}'"
 			return true
@@ -270,23 +265,23 @@ videojs.Soundcloud::loadSoundcloud = ->
 
 	# Prepare everything for playing
 	if videojs.Soundcloud.apiReady and not @soundcloudPlayer
+		debug "simply initializing the widget"
 		@initWidget()
 	else
 		# Load the Soundcloud API if it is the first Soundcloud video
 		if not videojs.Soundcloud.apiLoading
-			###
-			Initiate the soundcloud tech once the API is ready
-			###
+
+			# Initiate the soundcloud tech once the API is ready
 			checkSoundcloudApiReady = =>
 				if typeof window.SC != "undefined"
 					videojs.Soundcloud.apiReady = true
-					clearInterval videojs.Soundcloud.intervalId
+					window.clearInterval videojs.Soundcloud.intervalId
 					@onApiReady()
 					debug "cleared interval"
 			addScriptTag "https://w.soundcloud.com/player/api.js"
 			addScriptTag "https://connect.soundcloud.com/sdk.js"
 			videojs.Soundcloud.apiLoading = true
-			videojs.Soundcloud.intervalId = setInterval checkSoundcloudApiReady, 500
+			videojs.Soundcloud.intervalId = window.setInterval checkSoundcloudApiReady, 10
 
 ###
 It should initialize a soundcloud Widget, which will be our player
@@ -337,11 +332,16 @@ videojs.Soundcloud::onReady = ->
 		@unmuteVolume = volume / 100
 		@setVolume @unmuteVolume
 
-	# It's async and won't change so let's do this now
-	@soundcloudPlayer.getDuration (duration) =>
-		@durationMilliseconds = duration
-		@player_.trigger 'durationchange'
-		@player_.trigger "canplay"
+
+	try
+		# It's async and won't change so let's do this now
+		@soundcloudPlayer.getDuration (duration) =>
+			@durationMilliseconds = duration
+			@player_.trigger 'durationchange'
+			@player_.trigger "canplay"
+	catch e
+		debug "could not get the duration"
+
 
 	@updatePoster()
 
@@ -350,9 +350,13 @@ videojs.Soundcloud::onReady = ->
 	#@soundcloudPlayer.pause()
 
 	@triggerReady()
-	@isReady_ = true
 	# Play right away if we clicked before ready
-	@soundcloudPlayer.play() if @playOnReady
+	try
+		@soundcloudPlayer.play() if @playOnReady
+	catch e
+		debug "could not play onready"
+
+	debug "finished onReady"
 
 
 ###
