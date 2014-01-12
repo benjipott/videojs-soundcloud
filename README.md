@@ -62,4 +62,4 @@ Is generated with [Codo](https://github.com/coffeedoc/codo) and hosted on [coffe
 
 Example
 -------
-[JsFiddle with single source](http://jsfiddle.net/x7FDL/) - Please be aware that you need to have a client id to be able to test this! So head over to [soundcloud](http://soundcloud.com/) signin/register and [register an app](http://soundcloud.com/you/apps) (even a test one) if you haven't already ;)
+[JsFiddle with single source](http://jsfiddle.net/x7FDL/4/) - Please be aware that you need to have a client id to be able to test this! So head over to [soundcloud](http://soundcloud.com/) signin/register and [register an app](http://soundcloud.com/you/apps) (even a test one) if you haven't already ;)
