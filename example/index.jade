@@ -1,0 +1,29 @@
+html
+	head
+
+		//- !-- Mandatory videojs include! --
+		script(src="http://vjs.zencdn.net/4.2.2/video.js")
+		link(href="http://vjs.zencdn.net/4.2.2/video-js.css" rel="stylesheet")
+		script(src="../dist/media.soundcloud.js")
+
+		//- To make livereload work
+		script(src="http://localhost:35729/livereload.js")
+
+		title videojs-souncloud test
+
+	body
+		h1 videojs-souncloud example
+		video#myStuff(
+			class="video-js vjs-default-skin"
+			controls
+			preload="auto"
+			width="100%"
+			height="360"
+			data-setup=''
+			)
+		//- Dynamic include
+		script
+			videojs("myStuff", {
+			  "techOrder": ["soundcloud"],
+			  "src": "https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like",
+			  }, function(){})
