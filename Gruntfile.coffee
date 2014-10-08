@@ -21,9 +21,6 @@ module.exports = (grunt) ->
 				files:
 					"dist/<%= pkg.name %>.min.js": ["dist/media.soundcloud.js"]
 
-		qunit:
-			files: ["test/**/*.html"]
-
 		jshint:
 			files: ["Gruntfile.js", "dist/**/*.js", "test/**/*.js"]
 			options:
@@ -36,13 +33,20 @@ module.exports = (grunt) ->
 					document: true
 
 		watch:
-			files: ["<%= jshint.files %>"]
-			tasks: ["coffee_jshint", "qunit"]
+			sources:
+				files: ["src/*.coffee", "example/*.jade"]
+				tasks: ["coffee_jshint", "compile"]
+				options: livereload: true
 
 		coffee:
 			compile:
 				files:
 					"dist/media.soundcloud.js": "src/media.soundcloud.coffee"
+
+		jade:
+			compile:
+				files:
+					"example/index.html": "example/index.jade"
 
 		coffee_jshint:
 			options:
@@ -53,6 +57,7 @@ module.exports = (grunt) ->
 					"window"
 					"document"
 					"module"
+					"console"
 				]
 			source:
 				src: "src/**/*.coffee"
@@ -63,8 +68,8 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks "grunt-contrib-coffee"
 	grunt.loadNpmTasks "grunt-coffee-jshint"
 	grunt.loadNpmTasks "grunt-contrib-uglify"
-	grunt.loadNpmTasks "grunt-contrib-qunit"
 	grunt.loadNpmTasks "grunt-contrib-watch"
 	grunt.loadNpmTasks "grunt-contrib-concat"
-	grunt.registerTask "test", ["coffee_jshint", "qunit"]
-	grunt.registerTask "default", ["coffee_jshint", "coffee" ]
+	grunt.loadNpmTasks "grunt-contrib-jade"
+	grunt.registerTask "compile", ["jade", "coffee"]
+	grunt.registerTask "default", ["coffee_jshint", "compile" ]
