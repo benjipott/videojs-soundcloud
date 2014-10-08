@@ -1,1 +1,5 @@
 node_modules
+
+# compiled files
+dist/
+example/*.html
