@@ -33,10 +33,8 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 		videojs.MediaTechController.call(@, player, options, ready)
 
 		@player_ = player
-
 		@clientId = @player_.options().soundcloudClientId
-		@soundcloudSource = ""
-		@soundcloudSource = options.source.src || "" if options.source
+		@soundcloudSource = options.source
 
 		# Create the iframe for the soundcloud API
 		@scWidgetId = "#{@player_.id()}_soundcloud_api_#{Date.now()}"
