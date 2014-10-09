@@ -49,8 +49,8 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 			style: "visibility: hidden;"
 			src: "https://w.soundcloud.com/player/?url=#{@soundcloudSource}"
 
-		@el().appendChild @scWidgetElement
-		@el().classList.add "backgroundContainer"
+		@player_.el().appendChild @scWidgetElement
+		@player_.el().classList.add "backgroundContainer"
 		debug "added widget div with src: #{@scWidgetElement.src}"
 
 		# Make autoplay work for iOS
@@ -69,8 +69,8 @@ videojs.Soundcloud::dispose = ->
 		@scWidgetElement.remove()
 		debug "Removed widget Element"
 		debug @scWidgetElement
-	@el().classList.remove "backgroundContainer"
-	@el().style.backgroundImage = ""
+	@player_.el().classList.remove "backgroundContainer"
+	@player_.el().style.backgroundImage = ""
 	debug "removed CSS"
 	delete @soundcloudPlayer if @soundcloudPlayer
 
@@ -94,7 +94,7 @@ videojs.Soundcloud::updatePoster = ->
 			return if  not sound.artwork_url
 			debug "Setting poster to #{sound.artwork_url}"
 			posterUrl = sound.artwork_url
-			@el().style.backgroundImage = "url('#{posterUrl}')"
+			@player_.el().style.backgroundImage = "url('#{posterUrl}')"
 			#@player_.poster(posterUrl)
 	catch e
 		debug "Could not update poster"
