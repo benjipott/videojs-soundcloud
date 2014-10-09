@@ -271,7 +271,7 @@ and which will react to events.
 videojs.Soundcloud::initWidget = ->
 	debug "Initializing the widget"
 
-	@soundcloudPlayer = SC.Widget @scWidgetElement
+	@soundcloudPlayer = SC.Widget @scWidgetId
 	debug "created widget"
 	@soundcloudPlayer.bind SC.Widget.Events.READY, =>
 		@onReady()
