@@ -20,7 +20,6 @@ Soundcloud Media Controller - Wrapper for Soundcloud Media API
 API SC.Widget documentation: http://developers.soundcloud.com/docs/api/html5-widget
 API Track documentation: http://developers.soundcloud.com/docs/api/reference#tracks
 @param [videojs.Player] player
-@param [Object] options soundcloudClientId is mandatory!
 @param [Function] ready
 ###
 videojs.Soundcloud = videojs.MediaTechController.extend
@@ -33,7 +32,6 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 		videojs.MediaTechController.call(@, player, options, ready)
 
 		@player_ = player
-		@clientId = @player_.options().soundcloudClientId
 		@soundcloudSource = options.source
 
 		# Create the iframe for the soundcloud API
@@ -61,18 +59,6 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 
 		debug "loading soundcloud"
 		@loadSoundcloud()
-
-###
-Set up everything to use soundcloud's streaming API
-###
-videojs.Soundcloud::onApiReady = ->
-	debug "onApiReady (SC exists)"
-
-	if not @apiInitialized
-		SC.initialize client_id: @clientId
-		@apiInitialized = true
-
-	@initWidget()
 
 ###
 Destruct the tech and it's DOM elements
@@ -274,10 +260,9 @@ videojs.Soundcloud::loadSoundcloud = ->
 				if typeof window.SC != "undefined"
 					videojs.Soundcloud.apiReady = true
 					window.clearInterval videojs.Soundcloud.intervalId
-					@onApiReady()
+					@initWidget()
 					debug "cleared interval"
-			addScriptTag "https://w.soundcloud.com/player/api.js"
-			addScriptTag "https://connect.soundcloud.com/sdk.js"
+			addScriptTag "http://w.soundcloud.com/player/api.js"
 			videojs.Soundcloud.apiLoading = true
 			videojs.Soundcloud.intervalId = window.setInterval checkSoundcloudApiReady, 10
 

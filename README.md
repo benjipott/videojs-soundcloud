@@ -34,8 +34,7 @@ The project uses coffeescript, which is a language that compiles into javascript
     <script type="text/coffeescript">
       videojs "myStuff", {
           "techOrder": ["soundcloud"]
-          "soundcloudClientId": yourSoundcloudClientId
-          "src": "https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"
+          "source": ["https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"]
           }, ->
     </script>
 </body>
