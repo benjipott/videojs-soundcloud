@@ -18,7 +18,6 @@
     "url": "https://github.com/LoveIsGrief/videojs-soundcloud.git"
   },
   "devDependencies": {
-    "URIjs": "~1.11.2",
     "grunt": "~0.4.0",
     "grunt-coffee-jshint": "~0.2.0",
     "grunt-contrib-clean": "~0.4.0a",
