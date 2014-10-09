@@ -57,6 +57,12 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 		if @player_.options().autoplay
 			@playOnReady = true
 
+		@readyToPlay = false
+		# Called by @triggerReady once the player is ready for business
+		@ready =>
+			debug "ready to play"
+			@readyToPlay = true
+
 		debug "loading soundcloud"
 		@loadSoundcloud()
 
@@ -100,7 +106,7 @@ videojs.Soundcloud::updatePoster = ->
 		debug "Could not update poster"
 
 videojs.Soundcloud::play = ->
-	if @isReady_
+	if @readyToPlay
 		debug "play"
 		@soundcloudPlayer.play()
 	else
