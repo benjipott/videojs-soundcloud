@@ -165,7 +165,7 @@ videojs.Soundcloud::setVolume = (percentAsDecimal)->
 	debug "setVolume(#{percentAsDecimal}) from #{@volumeVal}"
 	if percentAsDecimal != @volumeVal
 		@volumeVal = percentAsDecimal
-		@soundcloudPlayer.setVolume(@volumeVal * 100)
+		@soundcloudPlayer.setVolume @volumeVal
 		debug "volume has been set"
 		@player_.trigger 'volumechange'
 
@@ -310,7 +310,8 @@ videojs.Soundcloud::onReady = ->
 
 	# Preparing to handle muting
 	@soundcloudPlayer.getVolume (volume) =>
-		@unmuteVolume = volume / 100
+		@unmuteVolume = volume
+		debug "current volume on soundcloud: #{@unmuteVolume}"
 		@setVolume @unmuteVolume
 
 
