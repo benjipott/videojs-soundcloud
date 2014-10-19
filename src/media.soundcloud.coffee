@@ -154,7 +154,7 @@ videojs.Soundcloud::duration = ->
 # TODO Fix buffer-range calculations
 videojs.Soundcloud::buffered = ->
 	timePassed = @duration() * @loadPercentageDecimal
-	debug "buffered #{timePassed}"
+	debug "buffered #{timePassed}" if timePassed > 0
 	videojs.createTimeRange 0, timePassed
 
 videojs.Soundcloud::volume = ->
