@@ -26,9 +26,6 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 	init: (player, options, ready)->
 		debug "initializing Soundcloud tech"
 
-		# Define which features we provide
-		@features.fullscreenResize = true
-		@features.volumeControl = true
 		videojs.MediaTechController.call(@, player, options, ready)
 
 		@player_ = player
