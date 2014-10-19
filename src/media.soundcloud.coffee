@@ -63,6 +63,9 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 			debug "ready to play"
 			@readyToPlay = true
 
+			# Trigger to enable controls
+			@player_.trigger "loadstart"
+
 		debug "loading soundcloud"
 		@loadSoundcloud()
 
