@@ -48,6 +48,13 @@ module.exports = (grunt) ->
 				files:
 					"example/index.html": "example/index.jade"
 
+		karma:
+			watch:
+				configFile: "test/karma.conf.coffee"
+			single:
+				configFile: "test/karma.conf.coffee"
+				singleRun: true
+
 		coffee_jshint:
 			options:
 				globals:[
@@ -71,5 +78,7 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks "grunt-contrib-watch"
 	grunt.loadNpmTasks "grunt-contrib-concat"
 	grunt.loadNpmTasks "grunt-contrib-jade"
+	grunt.loadNpmTasks "grunt-karma"
 	grunt.registerTask "compile", ["jade", "coffee"]
-	grunt.registerTask "default", ["coffee_jshint", "compile" ]
+	grunt.registerTask "test", ["karma:watch"]
+	grunt.registerTask "default", ["coffee_jshint", "karma:single", "compile" ]

@@ -2,8 +2,8 @@ html
 	head
 
 		//- !-- Mandatory videojs include! --
-		script(src="http://vjs.zencdn.net/4.2.2/video.js")
-		link(href="http://vjs.zencdn.net/4.2.2/video-js.css" rel="stylesheet")
+		script(src="../bower_components/videojs/dist/video-js/video.js")
+		link(href="../bower_components/videojs/dist/video-js/video-js.css" rel="stylesheet")
 		script(src="../dist/media.soundcloud.js")
 
 		//- To make livereload work
@@ -16,7 +16,6 @@ html
 		video#myStuff(
 			class="video-js vjs-default-skin"
 			controls
-			preload="auto"
 			width="100%"
 			height="360"
 			)

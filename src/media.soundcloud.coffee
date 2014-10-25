@@ -12,8 +12,8 @@ addScriptTag = (scriptUrl)->
 	debug "adding script #{scriptUrl}"
 	tag = document.createElement 'script'
 	tag.src = scriptUrl
-	firstScriptTag = document.getElementsByTagName('script')[0]
-	firstScriptTag.parentNode.insertBefore tag, firstScriptTag
+	headTag = document.getElementsByTagName('head')[0]
+	headTag.parentNode.appendChild tag
 
 ###
 Soundcloud Media Controller - Wrapper for Soundcloud Media API
@@ -26,13 +26,14 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 	init: (player, options, ready)->
 		debug "initializing Soundcloud tech"
 
-		# Define which features we provide
-		@features.fullscreenResize = true
-		@features.volumeControl = true
 		videojs.MediaTechController.call(@, player, options, ready)
 
 		@player_ = player
-		@soundcloudSource = options.source
+		@soundcloudSource = if "string" == typeof options.source
+				debug "given string source: #{options.source}"
+				options.source
+			else
+				options.source.src
 
 		# Create the iframe for the soundcloud API
 		@scWidgetId = "#{@player_.id()}_soundcloud_api_#{Date.now()}"
@@ -63,6 +64,9 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 			debug "ready to play"
 			@readyToPlay = true
 
+			# Trigger to enable controls
+			@player_.trigger "loadstart"
+
 		debug "loading soundcloud"
 		@loadSoundcloud()
 
@@ -72,7 +76,7 @@ Destruct the tech and it's DOM elements
 videojs.Soundcloud::dispose = ->
 	debug "dispose"
 	if @scWidgetElement
-		@scWidgetElement.remove()
+		@scWidgetElement.parentNode.removeChild @scWidgetElement
 		debug "Removed widget Element"
 		debug @scWidgetElement
 	@player_.el().classList.remove "backgroundContainer"
@@ -137,12 +141,12 @@ videojs.Soundcloud::paused = ->
 ###
 videojs.Soundcloud::currentTime = ->
 	debug "currentTime #{@durationMilliseconds * @playPercentageDecimal / 1000}"
-	@durationMilliseconds * @playPercentageDecimal / 1000
+	@currentPositionSeconds
 
 videojs.Soundcloud::setCurrentTime = (seconds)->
-	debug "setCurrentTime"
-	@soundcloudPlayer.seekTo(seconds*1000)
-	@player_.trigger('timeupdate')
+	debug "setCurrentTime #{seconds}"
+	@soundcloudPlayer.seekTo seconds*1000
+	@player_.trigger "seeking"
 
 ###
 @return total length of track in seconds
@@ -154,18 +158,22 @@ videojs.Soundcloud::duration = ->
 # TODO Fix buffer-range calculations
 videojs.Soundcloud::buffered = ->
 	timePassed = @duration() * @loadPercentageDecimal
-	debug "buffered #{timePassed}"
+	debug "buffered #{timePassed}" if timePassed > 0
 	videojs.createTimeRange 0, timePassed
 
 videojs.Soundcloud::volume = ->
-	debug "volume: #{@volumeVal}"
+	debug "volume: #{@volumeVal* 100}%"
 	@volumeVal
 
+###
+Called from [videojs::Player::volume](https://github.com/videojs/video.js/blob/master/docs/api/vjs.Player.md#volume-percentasdecimal-)
+@param percentAsDecimal {Number} A decimal number [0-1]
+###
 videojs.Soundcloud::setVolume = (percentAsDecimal)->
 	debug "setVolume(#{percentAsDecimal}) from #{@volumeVal}"
 	if percentAsDecimal != @volumeVal
 		@volumeVal = percentAsDecimal
-		@soundcloudPlayer.setVolume(@volumeVal * 100)
+		@soundcloudPlayer.setVolume @volumeVal
 		debug "volume has been set"
 		@player_.trigger 'volumechange'
 
@@ -252,10 +260,12 @@ videojs.Soundcloud::loadSoundcloud = ->
 	else
 		# Load the Soundcloud API if it is the first Soundcloud video
 		if not videojs.Soundcloud.apiLoading
+			debug "loading soundcloud api"
 
 			# Initiate the soundcloud tech once the API is ready
 			checkSoundcloudApiReady = =>
 				if typeof window.SC != "undefined"
+					debug "soundcloud api is ready"
 					videojs.Soundcloud.apiReady = true
 					window.clearInterval videojs.Soundcloud.intervalId
 					@initWidget()
@@ -295,6 +305,10 @@ videojs.Soundcloud::initWidget = ->
 	@soundcloudPlayer.bind SC.Widget.Events.FINISH, =>
 		@onFinished()
 
+	@soundcloudPlayer.bind SC.Widget.Events.SEEK, (event) =>
+		debug "soundcloud seek callback"
+		@currentPositionSeconds = event.currentPosition / 1000
+		@player_.trigger "seeked"
 
 ###
 Callback for soundcloud's READY event.
@@ -304,13 +318,15 @@ videojs.Soundcloud::onReady = ->
 
 	@volumeVal = 0
 	@durationMilliseconds = 1
+	@currentPositionSeconds = 0
 	@loadPercentageDecimal = 0
 	@playPercentageDecimal = 0
 	@paused_ = true
 
 	# Preparing to handle muting
 	@soundcloudPlayer.getVolume (volume) =>
-		@unmuteVolume = volume / 100
+		@unmuteVolume = volume
+		debug "current volume on soundcloud: #{@unmuteVolume}"
 		@setVolume @unmuteVolume
 
 
