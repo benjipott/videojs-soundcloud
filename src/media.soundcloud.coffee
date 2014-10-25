@@ -256,10 +256,12 @@ videojs.Soundcloud::loadSoundcloud = ->
 	else
 		# Load the Soundcloud API if it is the first Soundcloud video
 		if not videojs.Soundcloud.apiLoading
+			debug "loading soundcloud api"
 
 			# Initiate the soundcloud tech once the API is ready
 			checkSoundcloudApiReady = =>
 				if typeof window.SC != "undefined"
+					debug "soundcloud api is ready"
 					videojs.Soundcloud.apiReady = true
 					window.clearInterval videojs.Soundcloud.intervalId
 					@initWidget()
