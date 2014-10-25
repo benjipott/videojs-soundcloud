@@ -42,6 +42,19 @@ The project uses coffeescript, which is a language that compiles into javascript
 
 More information is in the example below.
 
+Example
+-------
+[JsFiddle with a single soundcloud source](http://jsfiddle.net/x7FDL/27/)
+
+Developing
+----------
+
+* `npm install` to prepare the environment
+* `npm test` to run the tests once (Karma with Jasmine)
+* `npm run karma` to run tests continuously once a file is changed
+* `grunt` after `npm install` to prepare running the example at **example/index.html**
+* `grunt watch` to continuously compile coffee and jade, and run livereload for the example
+    you can run this alongside `npm run karma` if you wish
 
 How it works
 ============
@@ -59,6 +72,3 @@ Documentation
 -------------
 Is generated with [Codo](https://github.com/coffeedoc/codo) and hosted on [coffeedoc.info](http://coffeedoc.info/github/LoveIsGrief/videojs-soundcloud/master/). Props to them :)
 
-Example
--------
-[JsFiddle with single source](http://jsfiddle.net/x7FDL/27/)
