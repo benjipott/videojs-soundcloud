@@ -76,7 +76,7 @@ Destruct the tech and it's DOM elements
 videojs.Soundcloud::dispose = ->
 	debug "dispose"
 	if @scWidgetElement
-		@scWidgetElement.remove()
+		@scWidgetElement.parentNode.removeChild @scWidgetElement
 		debug "Removed widget Element"
 		debug @scWidgetElement
 	@player_.el().classList.remove "backgroundContainer"
