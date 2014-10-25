@@ -15,14 +15,16 @@ module.exports = (config) ->
 
     # list of files / patterns to load in the browser
     files: [
+      "bower_components/videojs/dist/video-js/video.dev.js"
+      "test/ressources/*.html"
+      "src/media.soundcloud.coffee"
       "test/unit/**-spec.coffee"
-      "src/media.soundcloud.coffe"
     ]
 
 
     # list of files to exclude
     exclude: [
-      "**/*.js"
+      # "**/*.js"
     ]
 
 
@@ -30,7 +32,7 @@ module.exports = (config) ->
     # available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
       "**/*.coffee": ["coffee"]
-      "**/*.html": ["coffee"]
+      "**/*.html": ["html2js"]
     }
 
 
@@ -64,7 +66,11 @@ module.exports = (config) ->
 
     # start these browsers
     # available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ["Chrome", "Firefox", "Opera"]
+    browsers: [
+        "Chrome"
+        "Firefox"
+        "Opera"
+    ]
 
 
     # Continuous Integration mode
