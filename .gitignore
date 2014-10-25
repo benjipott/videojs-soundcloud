@@ -4,3 +4,6 @@ bower_components
 # compiled files
 dist/
 example/*.html
+
+#npm stuff
+npm-debug.log
