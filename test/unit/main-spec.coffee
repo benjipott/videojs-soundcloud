@@ -14,6 +14,13 @@ describe "videojs-soundcloud plugin", ->
 	#   Reusable tests
 	################################
 
+	sourceObjectTest = (done) ->
+		@player.ready =>
+			iframe = document.getElementsByTagName("iframe")[0]
+			expect(iframe).toBeTruthy()
+			expect(iframe.src).toEqual "https://w.soundcloud.com/player/?url=#{@source}"
+			done()
+
 	# Test if calling play() works
 	playTest = (done) ->
 		@player.ready =>
@@ -82,18 +89,13 @@ describe "videojs-soundcloud plugin", ->
 				expect(@pluginPrototype.init).toHaveBeenCalled()
 				done()
 
-		it "should create soundcloud iframe from object source", (done) ->
-			@player.ready =>
-				iframe = document.getElementsByTagName("iframe")[0]
-				expect(iframe).toBeTruthy()
-				expect(iframe.src).toEqual "https://w.soundcloud.com/player/?url=#{@source}"
-				done()
+		it "should create soundcloud iframe", sourceObjectTest
 
 		it "should play the song", playTest
 
 		it "should half the volume", changeVolumeTest
 
-	describe "created with javascript source" , ->
+	describe "created with javascript string source" , ->
 
 		beforeEach ->
 			console.log "beforeEach with video and source tag"
@@ -105,12 +107,35 @@ describe "videojs-soundcloud plugin", ->
 				"sources": ["https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"]
 				}
 
-		it "should create soundcloud iframe from string source", (done)->
+		it "should create soundcloud iframe", (done)->
 			@player.ready =>
 					iframe = document.getElementsByTagName("iframe")[0]
 					expect(iframe).toBeTruthy()
 					expect(iframe.src).toEqual "https://w.soundcloud.com/player/?url=#{@source}"
 					done()
+
+		it "should play the song", playTest
+
+		it "should seek to 30 seconds", seekTo30Test
+
+		it "should half the volume", changeVolumeTest
+
+	describe "created with javascript object source" , ->
+
+		beforeEach ->
+			console.log "beforeEach with video and source tag"
+			@vFromScript = window.__html__['test/ressources/videojs_from_script.html']
+			document.body.innerHTML = @vFromScript
+			expect(document.getElementById @videoTagId).not.toBeNull()
+			@player = videojs @videoTagId, {
+				"techOrder": ["soundcloud"]
+				"sources": [ {
+					 src: "https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"
+					 type: "audio/soundcloud"
+					}]
+				}
+
+		it "should create soundcloud iframe", sourceObjectTest
 
 		it "should play the song", playTest
 
