@@ -12,8 +12,8 @@ addScriptTag = (scriptUrl)->
 	debug "adding script #{scriptUrl}"
 	tag = document.createElement 'script'
 	tag.src = scriptUrl
-	firstScriptTag = document.getElementsByTagName('script')[0]
-	firstScriptTag.parentNode.insertBefore tag, firstScriptTag
+	headTag = document.getElementsByTagName('head')[0]
+	headTag.parentNode.appendChild tag
 
 ###
 Soundcloud Media Controller - Wrapper for Soundcloud Media API
