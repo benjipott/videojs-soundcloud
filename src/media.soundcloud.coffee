@@ -141,12 +141,12 @@ videojs.Soundcloud::paused = ->
 ###
 videojs.Soundcloud::currentTime = ->
 	debug "currentTime #{@durationMilliseconds * @playPercentageDecimal / 1000}"
-	@durationMilliseconds * @playPercentageDecimal / 1000
+	@currentPositionSeconds
 
 videojs.Soundcloud::setCurrentTime = (seconds)->
-	debug "setCurrentTime"
-	@soundcloudPlayer.seekTo(seconds*1000)
-	@player_.trigger('timeupdate')
+	debug "setCurrentTime #{seconds}"
+	@soundcloudPlayer.seekTo seconds*1000
+	@player_.trigger "seeking"
 
 ###
 @return total length of track in seconds
@@ -299,6 +299,10 @@ videojs.Soundcloud::initWidget = ->
 	@soundcloudPlayer.bind SC.Widget.Events.FINISH, =>
 		@onFinished()
 
+	@soundcloudPlayer.bind SC.Widget.Events.SEEK, (event) =>
+		debug "soundcloud seek callback"
+		@currentPositionSeconds = event.currentPosition / 1000
+		@player_.trigger "seeked"
 
 ###
 Callback for soundcloud's READY event.
@@ -308,6 +312,7 @@ videojs.Soundcloud::onReady = ->
 
 	@volumeVal = 0
 	@durationMilliseconds = 1
+	@currentPositionSeconds = 0
 	@loadPercentageDecimal = 0
 	@playPercentageDecimal = 0
 	@paused_ = true
