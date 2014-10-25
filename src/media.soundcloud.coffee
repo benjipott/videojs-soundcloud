@@ -162,7 +162,7 @@ videojs.Soundcloud::buffered = ->
 	videojs.createTimeRange 0, timePassed
 
 videojs.Soundcloud::volume = ->
-	debug "volume: #{@volumeVal}"
+	debug "volume: #{@volumeVal* 100}%"
 	@volumeVal
 
 videojs.Soundcloud::setVolume = (percentAsDecimal)->
