@@ -165,6 +165,10 @@ videojs.Soundcloud::volume = ->
 	debug "volume: #{@volumeVal* 100}%"
 	@volumeVal
 
+###
+Called from [videojs::Player::volume](https://github.com/videojs/video.js/blob/master/docs/api/vjs.Player.md#volume-percentasdecimal-)
+@param percentAsDecimal {Number} A decimal number [0-1]
+###
 videojs.Soundcloud::setVolume = (percentAsDecimal)->
 	debug "setVolume(#{percentAsDecimal}) from #{@volumeVal}"
 	if percentAsDecimal != @volumeVal

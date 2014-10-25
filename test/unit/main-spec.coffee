@@ -38,12 +38,25 @@ describe "videojs-soundcloud plugin", ->
 				done()
 			@player.play()
 
+	# Try changing the volume
+	# volumes are given as decimals
+	# https://github.com/videojs/video.js/blob/master/docs/api/vjs.Player.md#volume-percentasdecimal-
+	changeVolumeTest = (done) ->
+		@player.ready =>
+			volume = 0.5
+			@player.on "volumechange", =>
+				expect(@player.volume()).toEqual volume
+				done()
+			@player.volume volume
+
 	beforeEach ->
 		console.log "master beforeEach"
 		@plugin = videojs.Soundcloud
 		@pluginPrototype = @plugin.prototype
 		spyOnAllClassFunctions @plugin
 		@videoTagId = "myStuff"
+
+		# The audio we wanna play
 		@source = "https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"
 
 	afterEach ->
@@ -78,6 +91,8 @@ describe "videojs-soundcloud plugin", ->
 
 		it "should play the song", playTest
 
+		it "should half the volume", changeVolumeTest
+
 	describe "created with javascript source" , ->
 
 		beforeEach ->
@@ -101,3 +116,4 @@ describe "videojs-soundcloud plugin", ->
 
 		it "should seek to 30 seconds", seekTo30Test
 
+		it "should half the volume", changeVolumeTest
