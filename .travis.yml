@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+    - "0.10"
+    - "0.8"
+    - "0.6"
+
+# Use Chromium instead of Chrome
+# Since it's easier to install
+env: CHROME_BIN chromium-browser
+
+before_install:
+    # Install the browsers
+    - sudo apt-get update -qq
+    - sudo apt-get install -y chromium-browser opera firefox
+    # Setup xvfb for browsers
+    - "export DISPLAY=:99.0"
+    - "sh -e /etc/init.d/xvfb start"
