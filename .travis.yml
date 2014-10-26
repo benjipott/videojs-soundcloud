@@ -24,4 +24,4 @@ before_install:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
     # Install grunt and bower globally
-    - npm install -g grunt bower
+    - npm install -g grunt-cli bower
