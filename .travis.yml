@@ -6,7 +6,7 @@ node_js:
 
 # Use Chromium instead of Chrome
 # Since it's easier to install
-env: CHROME_BIN chromium-browser
+env: CHROME_BIN=chromium-browser
 
 before_install:
     # Install the browsers
