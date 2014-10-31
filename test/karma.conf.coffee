@@ -15,7 +15,7 @@ module.exports = (config) ->
 
     # list of files / patterns to load in the browser
     files: [
-      "bower_components/videojs/dist/video-js/video.dev.js"
+      "test/ressources/*.js"
       "test/ressources/*.html"
       "src/media.soundcloud.coffee"
       "test/unit/**-spec.coffee"
