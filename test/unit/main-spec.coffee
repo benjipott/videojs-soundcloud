@@ -104,7 +104,7 @@ describe "videojs-soundcloud plugin", ->
 			expect(document.getElementById @videoTagId).not.toBeNull()
 			@player = videojs @videoTagId, {
 				"techOrder": ["soundcloud"]
-				"sources": ["https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"]
+				"sources": [@source]
 				}
 
 		it "should create soundcloud iframe", (done)->
@@ -130,7 +130,7 @@ describe "videojs-soundcloud plugin", ->
 			@player = videojs @videoTagId, {
 				"techOrder": ["soundcloud"]
 				"sources": [ {
-					 src: "https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"
+					 src: @source
 					 type: "audio/soundcloud"
 					}]
 				}
