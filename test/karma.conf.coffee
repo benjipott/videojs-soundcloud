@@ -2,6 +2,16 @@
 # Generated on Sun Oct 19 2014 13:55:50 GMT+0200 (CEST)
 
 module.exports = (config) ->
+
+  # helper cars
+  karmaBrowsers = if process.env["BROWSERS"]
+          process.env["BROWSERS"].split(":")
+      else
+          [
+            "Chrome"
+            "Firefox"
+            "Opera"
+          ]
   config.set
 
     # base path that will be used to resolve all patterns (eg. files, exclude)
@@ -66,11 +76,7 @@ module.exports = (config) ->
 
     # start these browsers
     # available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: [
-        "Chrome"
-        "Firefox"
-        "Opera"
-    ]
+    browsers: karmaBrowsers
 
 
     # Continuous Integration mode
