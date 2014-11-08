@@ -56,6 +56,18 @@ describe "videojs-soundcloud plugin", ->
 				done()
 			@player.volume volume
 
+	# Try changing the source with a string
+	# It should trigger the "new source" event
+	changeStringSourceTest = (done)->
+		newSource = "https://soundcloud.com/user504272/teki-latex-dinosaurs-with-guns-cyberoptix-remix"
+		@player.on "ready", =>
+			@player.on "new source", =>
+				console.log "changed source"
+				expect(@player.src()).toEqual newSource
+				done()
+			console.log "changing source"
+			@player.src newSource
+
 	beforeEach ->
 		console.log "master beforeEach"
 		@plugin = videojs.Soundcloud
@@ -95,6 +107,8 @@ describe "videojs-soundcloud plugin", ->
 
 		it "should half the volume", changeVolumeTest
 
+		it "should change sources", changeStringSourceTest
+
 	describe "created with javascript string source" , ->
 
 		beforeEach ->
@@ -120,6 +134,8 @@ describe "videojs-soundcloud plugin", ->
 
 		it "should half the volume", changeVolumeTest
 
+		it "should change sources", changeStringSourceTest
+
 	describe "created with javascript object source" , ->
 
 		beforeEach ->
@@ -142,3 +158,16 @@ describe "videojs-soundcloud plugin", ->
 		it "should seek to 30 seconds", seekTo30Test
 
 		it "should half the volume", changeVolumeTest
+
+		it "should change sources", (done)->
+			newSource = {
+				src: "https://soundcloud.com/user504272/teki-latex-dinosaurs-with-guns-cyberoptix-remix"
+				type: "audio/soundcloud"
+			}
+			@player.on "ready", =>
+				@player.on "new source", =>
+					console.log "changed source"
+					expect(@player.src()).toEqual newSource.src
+					done()
+				console.log "changing source"
+				@player.src newSource
