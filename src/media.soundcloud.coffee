@@ -303,8 +303,8 @@ videojs.Soundcloud::initWidget = ->
 		debug "loading"
 		@onLoadProgress eventData.loadedProgress
 
-	@soundcloudPlayer.bind SC.Widget.Events.ERROR, (error)=>
-		@onError error
+	@soundcloudPlayer.bind SC.Widget.Events.ERROR, =>
+		@onError()
 
 	@soundcloudPlayer.bind SC.Widget.Events.PLAY, =>
 		@onPlay()
@@ -416,5 +416,4 @@ Callback for Soundcloud's ERROR event.
 Sadly soundlcoud doesn't send any information on what happened when using the widget API --> no error message.
 ###
 videojs.Soundcloud::onError = ->
-	@player_.error = "Soundcloud error"
-	@player_.trigger('error')
+	@player_.error("There was a soundcloud error. Check the view.")
