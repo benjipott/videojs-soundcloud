@@ -98,10 +98,21 @@ videojs.Soundcloud::load = ->
 	debug "loading"
 	@loadSoundcloud()
 
+###
+Called from [vjs.Player.src](https://github.com/videojs/video.js/blob/master/docs/api/vjs.Player.md#src-source-)
+Triggers "newSource" from vjs.Player once source has been changed
+
+@option option [String] src Source to load
+@return [String] current source if @src isn't given
+###
 videojs.Soundcloud.prototype.src = (src)->
+	return @soundcloudSource if not src
 	debug "load a new source(#{src})"
 	@soundcloudPlayer.load src, callback: =>
+		@soundcloudSource = src
 		@onReady()
+		debug "trigger 'newSource' from #{src}"
+		@player_.trigger "newSource"
 
 videojs.Soundcloud::updatePoster = ->
 	try
