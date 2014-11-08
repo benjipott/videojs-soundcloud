@@ -9,19 +9,40 @@ html
 		//- To make livereload work
 		script(src="http://localhost:35729/livereload.js")
 
+		//- Change soundcloud source
+		script.
+			function updateSource(){
+				source = document.getElementById("source").value
+				console.debug("Setting new source: " + source);
+				videojs("myAudio", {
+					"techOrder": ["soundcloud"],
+					//- "sources": [source],
+					}, function(){}
+				).src(source);
+
+			}
+
 		title videojs-souncloud test
 
-	body
+	body(onload="updateSource()")
 		h1 videojs-souncloud example
-		video#myStuff(
+
+		form(
+			onsubmit="updateSource();return false"
+			method="post"
+			)
+			input#source(
+				type="text"
+				value="https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"
+
+				)
+			input(
+				type="submit"
+				value="Submit"
+				)
+		video#myAudio(
 			class="video-js vjs-default-skin"
 			controls
 			width="100%"
 			height="360"
 			)
-		//- Dynamic include
-		script.
-			videojs("myStuff", {
-			  "techOrder": ["soundcloud"],
-			  "sources": ["https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"],
-			  }, function(){})
