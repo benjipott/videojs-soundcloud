@@ -28,12 +28,22 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 
 		videojs.MediaTechController.call(@, player, options, ready)
 
+		# Init attributes
+
+		@volumeVal = 0
+		@durationMilliseconds = 1
+		@currentPositionSeconds = 0
+		@loadPercentageDecimal = 0
+		@playPercentageDecimal = 0
+		@paused_ = true
+
 		@player_ = player
-		@soundcloudSource = if "string" == typeof options.source
-				debug "given string source: #{options.source}"
-				options.source
-			else
-				options.source.src
+		@soundcloudSource = null
+		if "string" == typeof options.source
+			debug "given string source: #{options.source}"
+			@soundcloudSource = options.source
+		else if "object" == typeof options.source
+			@soundcloudSource = options.source.src
 
 		# Create the iframe for the soundcloud API
 		@scWidgetId = "#{@player_.id()}_soundcloud_api_#{Date.now()}"
@@ -310,18 +320,16 @@ videojs.Soundcloud::initWidget = ->
 		@currentPositionSeconds = event.currentPosition / 1000
 		@player_.trigger "seeked"
 
+	# onReady won't be called by soundcloud when given an empty source
+	if not @soundcloudSource
+		@triggerReady()
+
+
 ###
 Callback for soundcloud's READY event.
 ###
 videojs.Soundcloud::onReady = ->
 	debug "onReady"
-
-	@volumeVal = 0
-	@durationMilliseconds = 1
-	@currentPositionSeconds = 0
-	@loadPercentageDecimal = 0
-	@playPercentageDecimal = 0
-	@paused_ = true
 
 	# Preparing to handle muting
 	@soundcloudPlayer.getVolume (volume) =>

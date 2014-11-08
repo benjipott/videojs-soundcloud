@@ -56,16 +56,28 @@ describe "videojs-soundcloud plugin", ->
 				done()
 			@player.volume volume
 
-	# Try changing the source with a string
-	# It should trigger the "new source" event
-	changeStringSourceTest = (done)->
-		newSource = "https://soundcloud.com/user504272/teki-latex-dinosaurs-with-guns-cyberoptix-remix"
-		@player.on "ready", =>
-			@player.on "new source", =>
-				console.log "changed source"
-				expect(@player.src()).toEqual newSource
+	###
+	Try changing the source with a string
+	It should trigger the "newSource" event
+
+	The input is the same as vjs.Player.src (that's what's called)
+	Which calls @see videojs.Soundcloud::src
+
+	@param newSource [Object] { type: <String>, src: <String>}
+	@param newSource [String] The URL
+	@return [Function] To pass to karma for testing a source change
+	###
+	changeSourceTest = (newSource) ->
+		newSourceString = if "object" == typeof newSource
+				newSource.src
+			else newSource
+
+		(done) ->
+			@player.one "newSource", =>
+				console.log "changed source for to #{newSourceString}"
+				expect(@player.src()).toEqual newSourceString
 				done()
-			console.log "changing source"
+			console.log "changing source to #{newSourceString}"
 			@player.src newSource
 
 	beforeEach ->
@@ -107,7 +119,14 @@ describe "videojs-soundcloud plugin", ->
 
 		it "should half the volume", changeVolumeTest
 
-		it "should change sources", changeStringSourceTest
+		### To use with @see changeSourceTest ###
+		secondSource = {
+			src: "https://soundcloud.com/user504272/teki-latex-dinosaurs-with-guns-cyberoptix-remix"
+			type: "audio/soundcloud"
+		}
+
+		it "should change object sources", changeSourceTest secondSource
+		it "should change string sources", changeSourceTest secondSource.src
 
 	describe "created with javascript string source" , ->
 
@@ -134,7 +153,14 @@ describe "videojs-soundcloud plugin", ->
 
 		it "should half the volume", changeVolumeTest
 
-		it "should change sources", changeStringSourceTest
+		### To use with @see changeSourceTest ###
+		secondSource = {
+			src: "https://soundcloud.com/andrewclarke201/under-the-sun-out-now"
+			type: "audio/soundcloud"
+		}
+
+		it "should change object sources", changeSourceTest secondSource
+		it "should change string sources", changeSourceTest secondSource.src
 
 	describe "created with javascript object source" , ->
 
@@ -159,15 +185,30 @@ describe "videojs-soundcloud plugin", ->
 
 		it "should half the volume", changeVolumeTest
 
-		it "should change sources", (done)->
-			newSource = {
-				src: "https://soundcloud.com/user504272/teki-latex-dinosaurs-with-guns-cyberoptix-remix"
-				type: "audio/soundcloud"
-			}
-			@player.on "ready", =>
-				@player.on "new source", =>
-					console.log "changed source"
-					expect(@player.src()).toEqual newSource.src
-					done()
-				console.log "changing source"
-				@player.src newSource
+		### To use with @see changeSourceTest ###
+		secondSource = {
+			src: "https://soundcloud.com/apexrise/or-nah"
+			type: "audio/soundcloud"
+		}
+
+		it "should change sources", changeSourceTest secondSource
+
+	describe "created with no source" , ->
+
+		beforeEach ->
+			console.log "beforeEach with no source tag"
+			@vFromScript = window.__html__['test/ressources/videojs_from_script.html']
+			document.body.innerHTML = @vFromScript
+			expect(document.getElementById @videoTagId).not.toBeNull()
+			@player = videojs @videoTagId, {
+				"techOrder": ["soundcloud"]
+				}
+
+		### To use with @see changeSourceTest ###
+		secondSource = {
+			src: "https://soundcloud.com/pegboardnerds/pegboard-nerds-here-it-comes"
+			type: "audio/soundcloud"
+		}
+
+		it "should change object sources", changeSourceTest secondSource
+		it "should change string sources", changeSourceTest secondSource.src
