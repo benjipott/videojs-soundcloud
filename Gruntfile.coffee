@@ -49,11 +49,13 @@ module.exports = (grunt) ->
 					"example/index.html": "example/index.jade"
 
 		karma:
-			watch:
+			options:
 				configFile: "test/karma.conf.coffee"
+
+			watch: {}
 			single:
-				configFile: "test/karma.conf.coffee"
 				singleRun: true
+
 
 		coffee_jshint:
 			options:
