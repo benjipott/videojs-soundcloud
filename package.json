@@ -20,6 +20,7 @@
     "url": "https://github.com/LoveIsGrief/videojs-soundcloud.git"
   },
   "devDependencies": {
+    "bower": "^1.3.12",
     "grunt": "~0.4.0",
     "grunt-coffee-jshint": "~0.2.0",
     "grunt-contrib-clean": "~0.4.0a",
@@ -36,8 +37,8 @@
     "karma-firefox-launcher": "^0.1.3",
     "karma-html2js-preprocessor": "^0.1.0",
     "karma-jasmine": "~0.2.0",
-    "karma-opera-launcher": "^0.1.0",
-    "bower": "^1.3.12"
+    "karma-notification-reporter": "0.0.1",
+    "karma-opera-launcher": "^0.1.0"
   },
   "dependencies": {
     "coffee-script": "^1.8.0"
