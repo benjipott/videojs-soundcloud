@@ -58,8 +58,8 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 			webkitAllowFullScreen: "true"
 			mozallowfullscreen: "true"
 			allowFullScreen: "true"
-			style: "visibility: hidden;"
 			src: "https://w.soundcloud.com/player/?url=#{@soundcloudSource}"
+		@scWidgetElement.style.visibility = "hidden"
 
 		@player_.el().appendChild @scWidgetElement
 		@player_.el().classList.add "backgroundContainer"
