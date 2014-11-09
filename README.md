@@ -46,7 +46,9 @@ More information is in the example below.
 
 Example
 -------
-[JsFiddle with a single soundcloud source](http://jsfiddle.net/x7FDL/27/)
+[JsFiddle with a single soundcloud source](http://jsfiddle.net/x7FDL/30/)
+
+Or run `npm install && grunt compile` and open the generated example in example/index.html
 
 Developing
 ----------
@@ -60,7 +62,8 @@ Developing
 
 How it works
 ============
-We create an iframe (with a soundcloud-embed URL) in the player-element and, using the soundcloud [Widget API](http://developers.soundcloud.com/docs/api/html5-widget] we initialize a widget that will give us the control methods, getters and setters we need.
+We create an iframe (with a soundcloud-embed URL) in the player-element and, using the soundcloud [Widget API](http://developers.soundcloud.com/docs/api/html5-widget] we initialize a widget that will give us the control methods, getters and setters we need.  
+Once the iframe is created it is hidden!
 
 More in detail notes
 --------------------
