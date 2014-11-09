@@ -20,6 +20,8 @@ Soundcloud Media Controller - Wrapper for Soundcloud Media API
 API SC.Widget documentation: http://developers.soundcloud.com/docs/api/html5-widget
 API Track documentation: http://developers.soundcloud.com/docs/api/reference#tracks
 @param [videojs.Player] player
+@option options {Object} options As given by vjs.Player.prototype.loadTech
+                         Should include a source attribute as one given to @see videojs.Soundcloud::src
 @param [Function] ready
 ###
 videojs.Soundcloud = videojs.MediaTechController.extend
@@ -34,7 +36,6 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 		@durationMilliseconds = 1
 		@currentPositionSeconds = 0
 		@loadPercentageDecimal = 0
-		@playPercentageDecimal = 0
 		@paused_ = true
 
 		@player_ = player
@@ -161,7 +162,7 @@ videojs.Soundcloud::paused = ->
 @return track time in seconds
 ###
 videojs.Soundcloud::currentTime = ->
-	debug "currentTime #{@durationMilliseconds * @playPercentageDecimal / 1000}"
+	debug "currentTime #{@currentPositionSeconds}"
 	@currentPositionSeconds
 
 videojs.Soundcloud::setCurrentTime = (seconds)->
@@ -327,9 +328,7 @@ videojs.Soundcloud::initWidget = ->
 		@onFinished()
 
 	@soundcloudPlayer.bind SC.Widget.Events.SEEK, (event) =>
-		debug "soundcloud seek callback"
-		@currentPositionSeconds = event.currentPosition / 1000
-		@player_.trigger "seeked"
+		@onSeek event.currentPosition
 
 	# onReady won't be called by soundcloud when given an empty source
 	if not @soundcloudSource
@@ -380,8 +379,9 @@ Callback for Soundcloud's PLAY_PROGRESS event
 It should keep track of how much has been played.
 @param {Decimal= playPercentageDecimal} [0...1] How much has been played  of the sound in decimal from [0...1]
 ###
-videojs.Soundcloud::onPlayProgress = (@playPercentageDecimal)->
+videojs.Soundcloud::onPlayProgress = (playPercentageDecimal)->
 	debug "onPlayProgress"
+	@currentPositionSeconds = @durationMilliseconds * playPercentageDecimal / 1000
 	@player_.trigger "playing"
 
 ###
@@ -392,6 +392,16 @@ It should keep track of how much has been buffered/loaded.
 videojs.Soundcloud::onLoadProgress = (@loadPercentageDecimal)->
 	debug "onLoadProgress: #{@loadPercentageDecimal}"
 	@player_.trigger "timeupdate"
+
+###
+Callback for Soundcloud's SEEK event after seeking is done.
+
+@param {Number= currentPositionMs} Where soundcloud seeked to
+###
+videojs.Soundcloud::onSeek = (currentPositionMs)->
+	debug "soundcloud seek callback"
+	@currentPositionSeconds = currentPositionMs / 1000
+	@player_.trigger "seeked"
 
 ###
 Callback for Soundcloud's PLAY event.
