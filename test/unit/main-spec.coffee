@@ -26,7 +26,13 @@ describe "videojs-soundcloud plugin", ->
 		@player.ready =>
 			@player.on "play", =>
 				expect(@player.paused()).toBeFalsy()
-				done()
+
+				@player.one "playing", =>
+					# Also check that it is actually playing and time is progressing
+					setTimeout =>
+						expect(@player.currentTime()).toBeGreaterThan 0
+						done()
+					, 1000
 			@player.play()
 
 	# Tries to seek to 30 seconds
@@ -41,7 +47,7 @@ describe "videojs-soundcloud plugin", ->
 				@player.currentTime seconds
 			# Check once we call back
 			@player.on "seeked", =>
-				expect(@player.currentTime()).toEqual seconds
+				expect(Math.round @player.currentTime()).toEqual  seconds
 				done()
 			@player.play()
 
