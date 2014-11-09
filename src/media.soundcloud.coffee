@@ -124,8 +124,9 @@ videojs.Soundcloud::updatePoster = ->
 
 			sound = sounds[0]
 			return if  not sound.artwork_url
-			debug "Setting poster to #{sound.artwork_url}"
-			posterUrl = sound.artwork_url
+			# Take the larger version as described at https://developers.soundcloud.com/docs/api/reference#artwork_url
+			posterUrl = sound.artwork_url.replace "large.jpg", "t500x500.jpg"
+			debug "Setting poster to #{posterUrl}"
 			@player_.el().style.backgroundImage = "url('#{posterUrl}')"
 			#@player_.poster(posterUrl)
 	catch e
