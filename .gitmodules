@@ -1,3 +1,0 @@
-[submodule "lib/uri.js"]
-	path = lib/uri.js
-	url = git@github.com:jwagener/uri.js.git

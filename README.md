@@ -1,9 +1,9 @@
 videojs-soundcloud
 ==================
 
-A [videojs/video-js](https://github.com/videojs/video.js) plugin to support soundcloud links e.g https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like
+[![Build Status](https://travis-ci.org/LoveIsGrief/videojs-soundcloud.svg?branch=6_fail_after_update)](https://travis-ci.org/LoveIsGrief/videojs-soundcloud)
 
-It depends on [jwagener/uri.js](https://github.com/jwagener/uri.js) for checking URIs.
+A [videojs/video-js](https://github.com/videojs/video.js) plugin to support soundcloud track links e.g https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like
 
 How to use (with coffeescript)
 ==============================
@@ -34,8 +34,7 @@ The project uses coffeescript, which is a language that compiles into javascript
     <script type="text/coffeescript">
       videojs "myStuff", {
           "techOrder": ["soundcloud"]
-          "soundcloudClientId": yourSoundcloudClientId
-          "src": "https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"
+          "source": ["https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"]
           }, ->
     </script>
 </body>
@@ -43,10 +42,26 @@ The project uses coffeescript, which is a language that compiles into javascript
 
 More information is in the example below.
 
+Example
+-------
+[JsFiddle with a single soundcloud source](http://jsfiddle.net/x7FDL/30/)
+
+Or run `npm install && grunt compile` and open the generated example in example/index.html
+
+Developing
+----------
+
+* `npm install` to prepare the environment
+* `npm test` to run the tests once (Karma with Jasmine)
+* `npm run karma` to run tests continuously once a file is changed
+* `grunt` after `npm install` to prepare running the example at **example/index.html**
+* `grunt watch` to continuously compile coffee and jade, and run livereload for the example
+    you can run this alongside `npm run karma` if you wish
 
 How it works
 ============
-We create an iframe (with a soundcloud-embed URL) in the player-element and, using the soundcloud [Widget API](http://developers.soundcloud.com/docs/api/html5-widget] we initialize a widget that will give us the control methods, getters and setters we need.
+We create an iframe (with a soundcloud-embed URL) in the player-element and, using the soundcloud [Widget API](http://developers.soundcloud.com/docs/api/html5-widget] we initialize a widget that will give us the control methods, getters and setters we need.  
+Once the iframe is created it is hidden!
 
 More in detail notes
 --------------------
@@ -60,6 +75,3 @@ Documentation
 -------------
 Is generated with [Codo](https://github.com/coffeedoc/codo) and hosted on [coffeedoc.info](http://coffeedoc.info/github/LoveIsGrief/videojs-soundcloud/master/). Props to them :)
 
-Example
--------
-[JsFiddle with single source](http://jsfiddle.net/x7FDL/4/) - Please be aware that you need to have a client id to be able to test this! So head over to [soundcloud](http://soundcloud.com/) signin/register and [register an app](http://soundcloud.com/you/apps) (even a test one) if you haven't already ;)

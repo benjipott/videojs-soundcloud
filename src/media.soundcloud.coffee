@@ -12,31 +12,39 @@ addScriptTag = (scriptUrl)->
 	debug "adding script #{scriptUrl}"
 	tag = document.createElement 'script'
 	tag.src = scriptUrl
-	firstScriptTag = document.getElementsByTagName('script')[0]
-	firstScriptTag.parentNode.insertBefore tag, firstScriptTag
+	headTag = document.getElementsByTagName('head')[0]
+	headTag.parentNode.appendChild tag
 
 ###
 Soundcloud Media Controller - Wrapper for Soundcloud Media API
 API SC.Widget documentation: http://developers.soundcloud.com/docs/api/html5-widget
 API Track documentation: http://developers.soundcloud.com/docs/api/reference#tracks
 @param [videojs.Player] player
-@param [Object] options soundcloudClientId is mandatory!
+@option options {Object} options As given by vjs.Player.prototype.loadTech
+                         Should include a source attribute as one given to @see videojs.Soundcloud::src
 @param [Function] ready
 ###
 videojs.Soundcloud = videojs.MediaTechController.extend
 	init: (player, options, ready)->
 		debug "initializing Soundcloud tech"
 
-		# Define which features we provide
-		@features.fullscreenResize = true
-		@features.volumeControl = true
 		videojs.MediaTechController.call(@, player, options, ready)
 
-		@player_ = player
+		# Init attributes
 
-		@clientId = @player_.options().soundcloudClientId
-		@soundcloudSource = ""
-		@soundcloudSource = options.source.src || "" if options.source
+		@volumeVal = 0
+		@durationMilliseconds = 1
+		@currentPositionSeconds = 0
+		@loadPercentageDecimal = 0
+		@paused_ = true
+
+		@player_ = player
+		@soundcloudSource = null
+		if "string" == typeof options.source
+			debug "given string source: #{options.source}"
+			@soundcloudSource = options.source
+		else if "object" == typeof options.source
+			@soundcloudSource = options.source.src
 
 		# Create the iframe for the soundcloud API
 		@scWidgetId = "#{@player_.id()}_soundcloud_api_#{Date.now()}"
@@ -50,31 +58,28 @@ videojs.Soundcloud = videojs.MediaTechController.extend
 			webkitAllowFullScreen: "true"
 			mozallowfullscreen: "true"
 			allowFullScreen: "true"
-			style: "visibility: hidden;"
 			src: "https://w.soundcloud.com/player/?url=#{@soundcloudSource}"
+		@scWidgetElement.style.visibility = "hidden"
 
-		@el().appendChild @scWidgetElement
-		@el().classList.add "backgroundContainer"
+		@player_.el().appendChild @scWidgetElement
+		@player_.el().classList.add "backgroundContainer"
 		debug "added widget div with src: #{@scWidgetElement.src}"
 
 		# Make autoplay work for iOS
 		if @player_.options().autoplay
 			@playOnReady = true
 
+		@readyToPlay = false
+		# Called by @triggerReady once the player is ready for business
+		@ready =>
+			debug "ready to play"
+			@readyToPlay = true
+
+			# Trigger to enable controls
+			@player_.trigger "loadstart"
+
 		debug "loading soundcloud"
 		@loadSoundcloud()
-
-###
-Set up everything to use soundcloud's streaming API
-###
-videojs.Soundcloud::onApiReady = ->
-	debug "onApiReady (SC exists)"
-
-	if not @apiInitialized
-		SC.initialize client_id: @clientId
-		@apiInitialized = true
-
-	@initWidget()
 
 ###
 Destruct the tech and it's DOM elements
@@ -82,11 +87,11 @@ Destruct the tech and it's DOM elements
 videojs.Soundcloud::dispose = ->
 	debug "dispose"
 	if @scWidgetElement
-		@scWidgetElement.remove()
+		@scWidgetElement.parentNode.removeChild @scWidgetElement
 		debug "Removed widget Element"
 		debug @scWidgetElement
-	@el().classList.remove "backgroundContainer"
-	@el().style.backgroundImage = ""
+	@player_.el().classList.remove "backgroundContainer"
+	@player_.el().style.backgroundImage = ""
 	debug "removed CSS"
 	delete @soundcloudPlayer if @soundcloudPlayer
 
@@ -94,10 +99,21 @@ videojs.Soundcloud::load = ->
 	debug "loading"
 	@loadSoundcloud()
 
+###
+Called from [vjs.Player.src](https://github.com/videojs/video.js/blob/master/docs/api/vjs.Player.md#src-source-)
+Triggers "newSource" from vjs.Player once source has been changed
+
+@option option [String] src Source to load
+@return [String] current source if @src isn't given
+###
 videojs.Soundcloud.prototype.src = (src)->
+	return @soundcloudSource if not src
 	debug "load a new source(#{src})"
 	@soundcloudPlayer.load src, callback: =>
+		@soundcloudSource = src
 		@onReady()
+		debug "trigger 'newSource' from #{src}"
+		@player_.trigger "newSource"
 
 videojs.Soundcloud::updatePoster = ->
 	try
@@ -108,15 +124,16 @@ videojs.Soundcloud::updatePoster = ->
 
 			sound = sounds[0]
 			return if  not sound.artwork_url
-			debug "Setting poster to #{sound.artwork_url}"
-			posterUrl = sound.artwork_url
-			@el().style.backgroundImage = "url('#{posterUrl}')"
+			# Take the larger version as described at https://developers.soundcloud.com/docs/api/reference#artwork_url
+			posterUrl = sound.artwork_url.replace "large.jpg", "t500x500.jpg"
+			debug "Setting poster to #{posterUrl}"
+			@player_.el().style.backgroundImage = "url('#{posterUrl}')"
 			#@player_.poster(posterUrl)
 	catch e
 		debug "Could not update poster"
 
 videojs.Soundcloud::play = ->
-	if @isReady_
+	if @readyToPlay
 		debug "play"
 		@soundcloudPlayer.play()
 	else
@@ -146,13 +163,13 @@ videojs.Soundcloud::paused = ->
 @return track time in seconds
 ###
 videojs.Soundcloud::currentTime = ->
-	debug "currentTime #{@durationMilliseconds * @playPercentageDecimal / 1000}"
-	@durationMilliseconds * @playPercentageDecimal / 1000
+	debug "currentTime #{@currentPositionSeconds}"
+	@currentPositionSeconds
 
 videojs.Soundcloud::setCurrentTime = (seconds)->
-	debug "setCurrentTime"
-	@soundcloudPlayer.seekTo(seconds*1000)
-	@player_.trigger('timeupdate')
+	debug "setCurrentTime #{seconds}"
+	@soundcloudPlayer.seekTo seconds*1000
+	@player_.trigger "seeking"
 
 ###
 @return total length of track in seconds
@@ -164,18 +181,22 @@ videojs.Soundcloud::duration = ->
 # TODO Fix buffer-range calculations
 videojs.Soundcloud::buffered = ->
 	timePassed = @duration() * @loadPercentageDecimal
-	debug "buffered #{timePassed}"
+	debug "buffered #{timePassed}" if timePassed > 0
 	videojs.createTimeRange 0, timePassed
 
 videojs.Soundcloud::volume = ->
-	debug "volume: #{@volumeVal}"
+	debug "volume: #{@volumeVal* 100}%"
 	@volumeVal
 
+###
+Called from [videojs::Player::volume](https://github.com/videojs/video.js/blob/master/docs/api/vjs.Player.md#volume-percentasdecimal-)
+@param percentAsDecimal {Number} A decimal number [0-1]
+###
 videojs.Soundcloud::setVolume = (percentAsDecimal)->
 	debug "setVolume(#{percentAsDecimal}) from #{@volumeVal}"
 	if percentAsDecimal != @volumeVal
 		@volumeVal = percentAsDecimal
-		@soundcloudPlayer.setVolume(@volumeVal * 100)
+		@soundcloudPlayer.setVolume @volumeVal
 		debug "volume has been set"
 		@player_.trigger 'volumechange'
 
@@ -233,15 +254,7 @@ Simple URI host check of the given url to see if it's really a soundcloud url
 @param url {String}
 ###
 videojs.Soundcloud::isSoundcloudUrl = (url)->
-	uri = new URI url
-
-	switch uri.hostname()
-		when "www.soundcloud.com", "soundcloud.com"
-			debug "Can play '#{url}'"
-			return true
-		else
-			debug "Cannot player #{url}"
-			return false
+	/^(https?:\/\/)?(www.)?soundcloud.com\//i.test(url)
 
 ###
 We expect "audio/soundcloud" or a src containing soundcloud
@@ -270,16 +283,17 @@ videojs.Soundcloud::loadSoundcloud = ->
 	else
 		# Load the Soundcloud API if it is the first Soundcloud video
 		if not videojs.Soundcloud.apiLoading
+			debug "loading soundcloud api"
 
 			# Initiate the soundcloud tech once the API is ready
 			checkSoundcloudApiReady = =>
 				if typeof window.SC != "undefined"
+					debug "soundcloud api is ready"
 					videojs.Soundcloud.apiReady = true
 					window.clearInterval videojs.Soundcloud.intervalId
-					@onApiReady()
+					@initWidget()
 					debug "cleared interval"
-			addScriptTag "https://w.soundcloud.com/player/api.js"
-			addScriptTag "https://connect.soundcloud.com/sdk.js"
+			addScriptTag "http://w.soundcloud.com/player/api.js"
 			videojs.Soundcloud.apiLoading = true
 			videojs.Soundcloud.intervalId = window.setInterval checkSoundcloudApiReady, 10
 
@@ -290,7 +304,7 @@ and which will react to events.
 videojs.Soundcloud::initWidget = ->
 	debug "Initializing the widget"
 
-	@soundcloudPlayer = SC.Widget @scWidgetElement
+	@soundcloudPlayer = SC.Widget @scWidgetId
 	debug "created widget"
 	@soundcloudPlayer.bind SC.Widget.Events.READY, =>
 		@onReady()
@@ -302,8 +316,8 @@ videojs.Soundcloud::initWidget = ->
 		debug "loading"
 		@onLoadProgress eventData.loadedProgress
 
-	@soundcloudPlayer.bind SC.Widget.Events.ERROR, (error)=>
-		@onError error
+	@soundcloudPlayer.bind SC.Widget.Events.ERROR, =>
+		@onError()
 
 	@soundcloudPlayer.bind SC.Widget.Events.PLAY, =>
 		@onPlay()
@@ -314,6 +328,13 @@ videojs.Soundcloud::initWidget = ->
 	@soundcloudPlayer.bind SC.Widget.Events.FINISH, =>
 		@onFinished()
 
+	@soundcloudPlayer.bind SC.Widget.Events.SEEK, (event) =>
+		@onSeek event.currentPosition
+
+	# onReady won't be called by soundcloud when given an empty source
+	if not @soundcloudSource
+		@triggerReady()
+
 
 ###
 Callback for soundcloud's READY event.
@@ -321,15 +342,10 @@ Callback for soundcloud's READY event.
 videojs.Soundcloud::onReady = ->
 	debug "onReady"
 
-	@volumeVal = 0
-	@durationMilliseconds = 1
-	@loadPercentageDecimal = 0
-	@playPercentageDecimal = 0
-	@paused_ = true
-
 	# Preparing to handle muting
 	@soundcloudPlayer.getVolume (volume) =>
-		@unmuteVolume = volume / 100
+		@unmuteVolume = volume
+		debug "current volume on soundcloud: #{@unmuteVolume}"
 		@setVolume @unmuteVolume
 
 
@@ -364,8 +380,9 @@ Callback for Soundcloud's PLAY_PROGRESS event
 It should keep track of how much has been played.
 @param {Decimal= playPercentageDecimal} [0...1] How much has been played  of the sound in decimal from [0...1]
 ###
-videojs.Soundcloud::onPlayProgress = (@playPercentageDecimal)->
+videojs.Soundcloud::onPlayProgress = (playPercentageDecimal)->
 	debug "onPlayProgress"
+	@currentPositionSeconds = @durationMilliseconds * playPercentageDecimal / 1000
 	@player_.trigger "playing"
 
 ###
@@ -376,6 +393,16 @@ It should keep track of how much has been buffered/loaded.
 videojs.Soundcloud::onLoadProgress = (@loadPercentageDecimal)->
 	debug "onLoadProgress: #{@loadPercentageDecimal}"
 	@player_.trigger "timeupdate"
+
+###
+Callback for Soundcloud's SEEK event after seeking is done.
+
+@param {Number= currentPositionMs} Where soundcloud seeked to
+###
+videojs.Soundcloud::onSeek = (currentPositionMs)->
+	debug "soundcloud seek callback"
+	@currentPositionSeconds = currentPositionMs / 1000
+	@player_.trigger "seeked"
 
 ###
 Callback for Soundcloud's PLAY event.
@@ -411,5 +438,4 @@ Callback for Soundcloud's ERROR event.
 Sadly soundlcoud doesn't send any information on what happened when using the widget API --> no error message.
 ###
 videojs.Soundcloud::onError = ->
-	@player_.error = "Soundcloud error"
-	@player_.trigger('error')
+	@player_.error("There was a soundcloud error. Check the view.")
