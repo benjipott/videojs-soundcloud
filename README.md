@@ -1,7 +1,7 @@
 videojs-soundcloud
 ==================
 
-[![Build Status](https://travis-ci.org/LoveIsGrief/videojs-soundcloud.svg?branch=6_fail_after_update)](https://travis-ci.org/LoveIsGrief/videojs-soundcloud)
+[![Build Status](https://travis-ci.org/LoveIsGrief/videojs-soundcloud.svg?branch=master)](https://travis-ci.org/LoveIsGrief/videojs-soundcloud)
 
 A [videojs/video-js](https://github.com/videojs/video.js) plugin to support soundcloud track links e.g https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like
 
