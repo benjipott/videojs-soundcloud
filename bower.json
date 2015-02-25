@@ -6,7 +6,11 @@
     "LoveIsGrief <LoveIsGrief@users.noreply.github.com>"
   ],
   "description": "A plugin for videojs to allow soundcloud playback.",
-  "main": "dist/media.soundcloud.js",
+  "main": [
+    "dist/media.soundcloud.js",
+    "dist/media.soundcloud.dev.js",
+    "dist/media.soundcloud.min.js"
+  ],
   "keywords": [
     "soundcloud",
     "videojs"
