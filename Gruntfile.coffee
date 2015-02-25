@@ -11,15 +11,24 @@ module.exports = (grunt) ->
 
 		uglify:
 			options:
-				banner: "/*! <%= pkg.name %> <%= grunt.template.today(\"dd-mm-yyyy\") %> */\n"
+				banner: "/*! <%= pkg.name %> v<%= pkg.version %>_<%= grunt.template.today(\"dd-mm-yyyy\") %> */\n"
 
-			dist:
+			# Remove console from dev
+			production:
+				options:
+					beautify: true
+					compress:
+						"drop_console": true
 				files:
-					"dist/<%= pkg.name %>.min.js": ["<%= concat.dist.dest %>"]
+					"dist/media.soundcloud.js": ["dist/media.soundcloud.dev.js"]
 
-			test:
+			# Minified production
+			minify:
+				options:
+					compress:
+						"drop_console": true
 				files:
-					"dist/<%= pkg.name %>.min.js": ["dist/media.soundcloud.js"]
+					"dist/media.soundcloud.min.js": ["dist/media.soundcloud.js"]
 
 		jshint:
 			files: ["Gruntfile.js", "dist/**/*.js", "test/**/*.js"]
@@ -39,9 +48,11 @@ module.exports = (grunt) ->
 				options: livereload: true
 
 		coffee:
+			options:
+				bare: true
 			compile:
 				files:
-					"dist/media.soundcloud.js": "src/media.soundcloud.coffee"
+					"dist/media.soundcloud.dev.js": "src/media.soundcloud.coffee"
 
 		jade:
 			compile:
@@ -55,6 +66,17 @@ module.exports = (grunt) ->
 			watch: {}
 			single:
 				singleRun: true
+
+			# Test the compiled and uglified lib
+			singleProduction:
+				singleRun: true
+				options:
+					files: [
+						"test/ressources/*.js"
+						"test/ressources/*.html"
+						"dist/media.soundcloud.min.js"
+						"test/unit/**-spec.coffee"
+					]
 
 
 		coffee_jshint:
@@ -81,6 +103,28 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks "grunt-contrib-concat"
 	grunt.loadNpmTasks "grunt-contrib-jade"
 	grunt.loadNpmTasks "grunt-karma"
-	grunt.registerTask "compile", ["jade", "coffee"]
-	grunt.registerTask "test", ["karma:watch"]
-	grunt.registerTask "default", ["coffee_jshint", "karma:single", "compile" ]
+
+	#
+	grunt.registerTask "compile", [
+					"coffee"
+					"uglify"
+				]
+
+	# Make the example/index.html usable
+	grunt.registerTask "example", [
+					"jade"
+					"compile"
+				]
+
+	# Runs tests on the dev source and then compiled source
+	grunt.registerTask "test", [
+					"karma:single"
+					"compile"
+					"karma:singleProduction"
+				]
+
+	#
+	grunt.registerTask "default", [
+					"coffee_jshint"
+					"test"
+				]
