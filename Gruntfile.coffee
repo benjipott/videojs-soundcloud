@@ -11,15 +11,24 @@ module.exports = (grunt) ->
 
 		uglify:
 			options:
-				banner: "/*! <%= pkg.name %> <%= grunt.template.today(\"dd-mm-yyyy\") %> */\n"
+				banner: "/*! <%= pkg.name %> v<%= pkg.version %>_<%= grunt.template.today(\"dd-mm-yyyy\") %> */\n"
 
-			dist:
+			# Remove console from dev
+			production:
+				options:
+					beautify: true
+					compress:
+						"drop_console": true
 				files:
-					"dist/<%= pkg.name %>.min.js": ["<%= concat.dist.dest %>"]
+					"dist/media.soundcloud.js": ["dist/media.soundcloud.dev.js"]
 
-			test:
+			# Minified production
+			minify:
+				options:
+					compress:
+						"drop_console": true
 				files:
-					"dist/<%= pkg.name %>.min.js": ["dist/media.soundcloud.js"]
+					"dist/media.soundcloud.min.js": ["dist/media.soundcloud.js"]
 
 		jshint:
 			files: ["Gruntfile.js", "dist/**/*.js", "test/**/*.js"]
@@ -39,9 +48,11 @@ module.exports = (grunt) ->
 				options: livereload: true
 
 		coffee:
+			options:
+				bare: true
 			compile:
 				files:
-					"dist/media.soundcloud.js": "src/media.soundcloud.coffee"
+					"dist/media.soundcloud.dev.js": "src/media.soundcloud.coffee"
 
 		jade:
 			compile:
