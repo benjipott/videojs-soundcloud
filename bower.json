@@ -24,6 +24,6 @@
     "tests"
   ],
   "dependencies": {
-    "videojs": "~4.11.3"
+    "videojs": "~4.12.1"
   }
 }
