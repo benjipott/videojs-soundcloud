@@ -11,7 +11,8 @@
   "homepage": "https://github.com/LoveIsGrief/videojs-soundcloud",
   "author": "LoveIsGrief",
   "scripts": {
-    "test": "grunt karma:single",
+    "prepublish": "grunt compile",
+    "test": "grunt test",
     "karma": "grunt karma:watch",
     "postinstall": "bower install"
   },
