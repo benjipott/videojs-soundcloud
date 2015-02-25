@@ -103,6 +103,28 @@ module.exports = (grunt) ->
 	grunt.loadNpmTasks "grunt-contrib-concat"
 	grunt.loadNpmTasks "grunt-contrib-jade"
 	grunt.loadNpmTasks "grunt-karma"
-	grunt.registerTask "compile", ["jade", "coffee"]
-	grunt.registerTask "test", ["karma:watch"]
-	grunt.registerTask "default", ["coffee_jshint", "karma:single", "compile" ]
+
+	#
+	grunt.registerTask "compile", [
+					"coffee"
+					"uglify"
+				]
+
+	# Make the example/index.html usable
+	grunt.registerTask "example", [
+					"jade"
+					"compile"
+				]
+
+	# Runs tests on the dev source and then compiled source
+	grunt.registerTask "test", [
+					"karma:single"
+					"compile"
+					"karma:singleProduction"
+				]
+
+	#
+	grunt.registerTask "default", [
+					"coffee_jshint"
+					"test"
+				]
