@@ -67,6 +67,17 @@ module.exports = (grunt) ->
 			single:
 				singleRun: true
 
+			# Test the compiled and uglified lib
+			singleProduction:
+				singleRun: true
+				options:
+					files: [
+						"test/ressources/*.js"
+						"test/ressources/*.html"
+						"dist/media.soundcloud.min.js"
+						"test/unit/**-spec.coffee"
+					]
+
 
 		coffee_jshint:
 			options:
