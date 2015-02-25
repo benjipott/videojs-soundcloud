@@ -39,9 +39,8 @@
     "karma-html2js-preprocessor": "^0.1.0",
     "karma-jasmine": "~0.2.0",
     "karma-notification-reporter": "0.0.1",
-    "karma-opera-launcher": "^0.1.0"
+    "karma-opera-launcher": "^0.1.0",
+    "coffee-script": "^1.8.0"
   },
   "dependencies": {
-    "coffee-script": "^1.8.0"
-  }
 }
