@@ -216,5 +216,14 @@ describe "videojs-soundcloud plugin", ->
 			type: "audio/soundcloud"
 		}
 
+		apiSource = {
+			src: "https://api.soundcloud.com/tracks/216846955&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false&amp;visual=true"
+			type: "audio/soundcloud"
+		}
+
 		it "should change object sources", changeSourceTest secondSource
 		it "should change string sources", changeSourceTest secondSource.src
+
+		it "should take api object sources", changeSourceTest apiSource
+		it "should take api string sources", changeSourceTest apiSource.src
+

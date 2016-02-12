@@ -10,7 +10,7 @@ module.exports = (config) ->
           [
             "Chrome"
             "Firefox"
-            "Opera"
+            # "Opera"
           ]
   config.set
 
