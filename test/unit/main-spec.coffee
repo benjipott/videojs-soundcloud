@@ -80,14 +80,14 @@ describe "videojs-soundcloud plugin", ->
 
 		(done) ->
 			@player.one "newSource", =>
-				console.log "changed source for to #{newSourceString}"
+				console.debug "changed source for to #{newSourceString}"
 				expect(@player.src()).toEqual newSourceString
 				done()
-			console.log "changing source to #{newSourceString}"
+			console.debug "changing source to #{newSourceString}"
 			@player.src newSource
 
 	beforeEach ->
-		console.log "master beforeEach"
+		console.debug "master beforeEach"
 		@plugin = videojs.Soundcloud
 		@pluginPrototype = @plugin.prototype
 		spyOnAllClassFunctions @plugin
@@ -97,7 +97,7 @@ describe "videojs-soundcloud plugin", ->
 		@source = "https://soundcloud.com/vaughan-1-1/this-is-what-crazy-looks-like"
 
 	afterEach ->
-		console.log "master afterEach"
+		console.debug "master afterEach"
 		player = videojs.players[@videoTagId]
 		player.dispose() if player
 
@@ -137,7 +137,7 @@ describe "videojs-soundcloud plugin", ->
 	describe "created with javascript string source" , ->
 
 		beforeEach ->
-			console.log "beforeEach with video and source tag"
+			console.debug "beforeEach with video and source tag"
 			@vFromScript = window.__html__['test/ressources/videojs_from_script.html']
 			document.body.innerHTML = @vFromScript
 			expect(document.getElementById @videoTagId).not.toBeNull()
@@ -171,7 +171,7 @@ describe "videojs-soundcloud plugin", ->
 	describe "created with javascript object source" , ->
 
 		beforeEach ->
-			console.log "beforeEach with video and source tag"
+			console.debug "beforeEach with video and source tag"
 			@vFromScript = window.__html__['test/ressources/videojs_from_script.html']
 			document.body.innerHTML = @vFromScript
 			expect(document.getElementById @videoTagId).not.toBeNull()
@@ -202,7 +202,7 @@ describe "videojs-soundcloud plugin", ->
 	describe "created with no source" , ->
 
 		beforeEach ->
-			console.log "beforeEach with no source tag"
+			console.debug "beforeEach with no source tag"
 			@vFromScript = window.__html__['test/ressources/videojs_from_script.html']
 			document.body.innerHTML = @vFromScript
 			expect(document.getElementById @videoTagId).not.toBeNull()
