@@ -1,4 +1,4 @@
-/*! video.js-soundcloud v1.0.0_25-02-2015 */
+/*! video.js-soundcloud v1.0.0_12-02-2016 */
 var addScriptTag;
 
 addScriptTag = function(a) {
@@ -87,7 +87,7 @@ addScriptTag = function(a) {
 }, videojs.Soundcloud.prototype.exitFullScreen = function() {
     return this.scWidgetElement.webkitExitFullScreen();
 }, videojs.Soundcloud.prototype.isSoundcloudUrl = function(a) {
-    return /^(https?:\/\/)?(www.)?soundcloud.com\//i.test(a);
+    return /^(https?:\/\/)?(www.|api.)?soundcloud.com\//i.test(a);
 }, videojs.Soundcloud.prototype.canPlaySource = videojs.Soundcloud.canPlaySource = function(a) {
     var b;
     return "string" == typeof a ? videojs.Soundcloud.prototype.isSoundcloudUrl(a) : b = "audio/soundcloud" === a.type || videojs.Soundcloud.prototype.isSoundcloudUrl(a.src);

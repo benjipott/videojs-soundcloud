@@ -312,7 +312,7 @@ Simple URI host check of the given url to see if it's really a soundcloud url
 
 
 videojs.Soundcloud.prototype.isSoundcloudUrl = function(url) {
-  return /^(https?:\/\/)?(www.)?soundcloud.com\//i.test(url);
+  return /^(https?:\/\/)?(www.|api.)?soundcloud.com\//i.test(url);
 };
 
 /*

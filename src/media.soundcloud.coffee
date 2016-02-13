@@ -253,7 +253,7 @@ Simple URI host check of the given url to see if it's really a soundcloud url
 @param url {String}
 ###
 videojs.Soundcloud::isSoundcloudUrl = (url)->
-	/^(https?:\/\/)?(www.)?soundcloud.com\//i.test(url)
+	/^(https?:\/\/)?(www.|api.)?soundcloud.com\//i.test(url)
 
 ###
 We expect "audio/soundcloud" or a src containing soundcloud
