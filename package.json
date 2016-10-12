@@ -1,5 +1,5 @@
 {
-  "name": "video.js-soundcloud",
+  "name": "videojs-soundcloud",
   "description": "A tech for video.js to play soundcloud links",
   "version": "1.0.1",
   "copyright": "See license @ https://github.com/LoveIsGrief/videojs-soundcloud/blob/master/LICENSE",
