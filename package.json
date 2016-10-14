@@ -8,6 +8,7 @@
     "audio",
     "player"
   ],
+  "main": "dist/media.soundcloud.dev.js",
   "homepage": "https://github.com/LoveIsGrief/videojs-soundcloud",
   "author": "LoveIsGrief",
   "scripts": {
